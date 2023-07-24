@@ -3,6 +3,7 @@ package com.sparta.abnb.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
@@ -18,11 +19,11 @@ public class Reservation extends Timestamped {
     @Column
     private Long reservationNumber; // 예약 인원
 
-    @Column
-    private LocalDateTime checkin; // 체크인
+    @Column(columnDefinition = "DATE")
+    private LocalDate checkin; // 체크인
 
-    @Column
-    private LocalDateTime checkout; // 체크아웃
+    @Column(columnDefinition = "DATE")
+    private LocalDate checkout; // 체크아웃
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
