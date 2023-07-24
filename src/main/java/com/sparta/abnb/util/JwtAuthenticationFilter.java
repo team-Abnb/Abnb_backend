@@ -50,19 +50,12 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
         log.info("로그인 성공 및 JWT 생성");
         Long id = ((UserDetailsImpl) authResult.getPrincipal()).getUser().getUserId();
-        log.info("1");
         UserRole role = ((UserDetailsImpl) authResult.getPrincipal()).getUser().getRole();
-        log.info("2");
         String username = ((UserDetailsImpl) authResult.getPrincipal()).getNickname();
-        log.info("3");
-        String accessToken = jwtUtil.createAccessToken(id, username, role);
-        log.info("4");
-        String refreshToken = jwtUtil.createRefreshToken(id);
-        log.info("5");
+        String accessToken = jwtUtil.substringToken(jwtUtil.createAccessToken(id, username, role));
+        String refreshToken = jwtUtil.substringToken(jwtUtil.createRefreshToken(id));
         jwtUtil.saveTokenToRedis(refreshToken, accessToken);
-        log.info("6");
         jwtUtil.addTokenToHeader(accessToken, refreshToken, response);
-        log.info("7");
         Map<String, Object> data = new LinkedHashMap<>();
         data.put("success", true);
         data.put("statusCode", HttpServletResponse.SC_OK);
