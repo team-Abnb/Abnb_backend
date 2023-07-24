@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.Base64;
 import java.util.Date;
 
 @RequiredArgsConstructor
@@ -21,10 +20,8 @@ public class RedisService {
 
     // 최초 발급된 Access Token과 Refresh Token을 저장 (key : Access, value : refresh)
     public void saveAccessToken(String accessToken, String refreshToken, Date refreshExpire) {
-        String encodedAccessToken = Base64.getEncoder().encodeToString(accessToken.getBytes());
-        String encodedRefreshToken = Base64.getEncoder().encodeToString(refreshToken.getBytes());
-        redisTemplate.opsForValue().set(encodedRefreshToken, encodedAccessToken); // key : value
-        redisTemplate.expireAt(encodedRefreshToken, refreshExpire); // 키 값에 해당 객체 만료일(자동삭제) 설정
+        redisTemplate.opsForValue().set(refreshToken, accessToken); // key : value
+        redisTemplate.expireAt(refreshToken, refreshExpire); // 키 값에 해당 객체 만료일(자동삭제) 설정
     }
 
     // 해당 데이터를 삭제하는 메서드?
