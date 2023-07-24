@@ -26,9 +26,9 @@ import java.util.Date;
 @Component
 @RequiredArgsConstructor
 public class JwtUtil {
-    private UserRepository userRepository;
-    private RedisService redisService;
-    private RedisTemplate<String, String> redisTemplate;
+    private final UserRepository userRepository;
+    private final RedisService redisService;
+    private final RedisTemplate<String, String> redisTemplate;
 
     public final String HEADER_ACCESS_TOKEN = "AccessToken";
     public final String HEADER_REFRESH_TOKEN = "RefreshToken";
