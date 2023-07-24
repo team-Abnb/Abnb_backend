@@ -1,6 +1,7 @@
 package com.sparta.abnb.service;
 
 import com.sparta.abnb.dto.requestdto.CommentRequestDto;
+import com.sparta.abnb.dto.responsedto.CommentDto;
 import com.sparta.abnb.dto.responsedto.CommentResponseDto;
 import com.sparta.abnb.entity.Comment;
 import com.sparta.abnb.entity.Room;
@@ -25,7 +26,7 @@ public class CommentService {
 
 
     //후기 작성
-    public ResponseEntity<CommentResponseDto> createComment(Long roomId, CommentRequestDto commentRequestDto, User user) {
+    public ResponseEntity<CommentDto> createComment(Long roomId, CommentRequestDto commentRequestDto, User user) {
         // 해당 room이 존재하는지 확인
         Room room = roomRepository.findById(roomId).orElseThrow(()
                 -> new IllegalArgumentException("찾으시는 ROOM은 존재하지 않습니다."));
@@ -39,7 +40,7 @@ public class CommentService {
 
         commentRepository.save(comment);
 
-        CommentResponseDto commentResponseDto = CommentResponseDto.builder()
+        CommentDto commentResponseDto = CommentDto.builder()
                 .commentId(comment.getCommentId())
                 .comment(comment.getComment())
                 .build();
@@ -49,24 +50,27 @@ public class CommentService {
     }
 
     // 해당 Room의 전체 후기 조회
-    public List<CommentResponseDto> getComments(Long roomId){
+    public CommentResponseDto getComments(Long roomId){
         List<Comment> commentList = commentRepository.findByRoomId(roomId);
 
         if(commentList.isEmpty()){
             throw new IllegalArgumentException("해당 ROOM은 후기가 존재하지 않습니다.");
         }
-        //commentList -> Dto
-        return commentList.stream()
-                .map(comment -> CommentResponseDto.builder()
+        List<CommentDto> commentDtos = commentList.stream()
+                .map(comment -> CommentDto.builder()
                         .comment(comment.getComment())
                         .commentId(comment.getCommentId())
                         .createdAt(comment.getCreateAt())
                         .username(comment.getUser().getUsername())
                         .profilePicture(comment.getUser().getProfilePicture())
-                        .build()
-                )
+                        .build())
                 .collect(Collectors.toList());
 
+        //commentList -> Dto
+        return CommentResponseDto.builder()
+                .totalComments(commentList.size())
+                .commentResponseDtos(commentDtos)
+                .build();
     }
 
     //후기 삭제

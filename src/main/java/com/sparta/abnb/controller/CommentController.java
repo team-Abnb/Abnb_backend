@@ -7,8 +7,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/rooms")
@@ -25,7 +23,7 @@ public class CommentController {
     }
     //후기 조회
     @GetMapping("/{roomId}/comment")
-    public List<CommentResponseDto> getComments(@PathVariable Long roomId){
+    public CommentResponseDto getComments(@PathVariable Long roomId){
         return commentService.getComments(roomId);
     }
     //후기 삭제
