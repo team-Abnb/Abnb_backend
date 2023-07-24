@@ -2,6 +2,7 @@ package com.sparta.abnb.controller;
 
 import com.sparta.abnb.dto.requestdto.UserRequestDto;
 import com.sparta.abnb.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -28,5 +29,10 @@ public class UserController {
     @PostMapping("/users/username")
     public Boolean checkUsername(@RequestParam String username) {
         return !userService.checkUsername(username);
+    }
+
+    @PostMapping("/users/logout")
+    public ResponseEntity<String> logOut(HttpServletRequest request) {
+        return userService.logOut(request);
     }
 }
