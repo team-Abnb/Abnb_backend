@@ -13,6 +13,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class CommentService {
@@ -28,25 +31,47 @@ public class CommentService {
                 -> new IllegalArgumentException("찾으시는 ROOM은 존재하지 않습니다."));
 
         // 댓글 작성 및 저장
-       Comment comment = Comment.builder()
-               .user(user)
-               .room(room)
-               .comment(commentRequestDto.getComment())
-               .build();
+        Comment comment = Comment.builder()
+                .user(user)
+                .room(room)
+                .comment(commentRequestDto.getComment())
+                .build();
 
-       commentRepository.save(comment);
+        commentRepository.save(comment);
 
-       CommentResponseDto commentResponseDto = CommentResponseDto.builder()
-               .commentId(comment.getCommentId())
-               .comment(comment.getComment())
-               .build();
+        CommentResponseDto commentResponseDto = CommentResponseDto.builder()
+                .commentId(comment.getCommentId())
+                .comment(comment.getComment())
+                .build();
 
-       return ResponseEntity.status(HttpStatus.OK).body(commentResponseDto);
+        return ResponseEntity.status(HttpStatus.OK).body(commentResponseDto);
+
+    }
+
+    // 해당 Room의 전체 후기 조회
+    public List<CommentResponseDto> getComments(Long roomId){
+        List<Comment> commentList = commentRepository.findByRoomId(roomId);
+
+        if(commentList.isEmpty()){
+            throw new IllegalArgumentException("해당 ROOM은 후기가 존재하지 않습니다.");
+        }
+        //commentList -> Dto
+        return commentList.stream()
+                .map(comment -> CommentResponseDto.builder()
+                        .comment(comment.getComment())
+                        .commentId(comment.getCommentId())
+                        .createdAt(comment.getCreateAt())
+                        .username(comment.getUser().getUsername())
+                        .profilePicture(comment.getUser().getProfilePicture())
+                        .build()
+                )
+                .collect(Collectors.toList());
 
     }
 
     //후기 삭제
     @Transactional
+
     public ResponseEntity<String> deleteComment(Long roomId, Long commentId, User user) {
 
         // 후기를 남긴 Room이 있는지 확인

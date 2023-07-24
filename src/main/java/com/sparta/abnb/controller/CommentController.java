@@ -1,11 +1,13 @@
 package com.sparta.abnb.controller;
 
 import com.sparta.abnb.dto.requestdto.CommentRequestDto;
+import com.sparta.abnb.dto.responsedto.CommentResponseDto;
 import com.sparta.abnb.service.CommentService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -19,10 +21,13 @@ public class CommentController {
             @PathVariable Long roomId,
             @RequestBody CommentRequestDto commentRequestDto
             @AuthenticationPrincipal UserDetailsImpl userDetails){
-       return commentService.createComment(roomId, commentRequestDto, userDetails.getUser());
+        return commentService.createComment(roomId, commentRequestDto, userDetails.getUser());
     }
     //후기 조회
-
+    @GetMapping("/{roomId}/comment")
+    public List<CommentResponseDto> getComments(@PathVariable Long roomId){
+        return commentService.getComments(roomId);
+    }
     //후기 삭제
     @DeleteMapping("/{roomId}/comment/{commentId}")
     public ResponseEntity<String> deleteComment(
