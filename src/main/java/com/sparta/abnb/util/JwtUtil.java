@@ -175,7 +175,6 @@ public class JwtUtil {
         log.info("8");
         try {
             Date refreshExpire = getUserInfo(refreshToken).getExpiration(); // refresh 토큰의 만료일
-            log.info("9");
             redisService.saveAccessToken(refreshToken, accessToken, refreshExpire);
             log.info("10");
         } catch (Exception e) {
