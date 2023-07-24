@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -44,4 +45,19 @@ public class CommentService {
 
     }
 
+    //후기 삭제
+    @Transactional
+    public ResponseEntity<String> deleteComment(Long roomId, Long commentId, User user) {
+
+        // 후기를 남긴 Room이 있는지 확인
+        Room room = roomRepository.findById(roomId).orElseThrow(()->
+                new IllegalArgumentException("해당 ROOM이 존재하지 않습니다."));
+        // 해당 후기를 DB에 있는지 확인
+        Comment comment = commentRepository.findById(commentId).orElseThrow(()->
+                new IllegalArgumentException("작성하신 후기가 존재하지 않습니다."));
+
+        commentRepository.delete(comment);
+
+        return ResponseEntity.status(HttpStatus.OK).body("후기 삭제가 완료되었습니다.");
+    }
 }

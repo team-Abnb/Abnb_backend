@@ -24,5 +24,12 @@ public class CommentController {
     //후기 조회
 
     //후기 삭제
+    @DeleteMapping("/{roomId}/comment/{commentId}")
+    public ResponseEntity<String> deleteComment(
+            @PathVariable Long roomId,
+            @PathVariable Long commentId
+            @AuthenticationPrincipal UserDetailsImpl userDetails){
+        return commentService.deleteComment(roomId,commentId, userDetials.getUser());
+    }
 
 }
