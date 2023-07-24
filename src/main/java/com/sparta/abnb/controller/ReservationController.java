@@ -4,7 +4,6 @@ import com.sparta.abnb.dto.requestdto.ReservationRequestDto;
 import com.sparta.abnb.dto.responsedto.ReservationResponseDto;
 import com.sparta.abnb.entity.User;
 import com.sparta.abnb.service.ReservationService;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,8 +17,18 @@ public class ReservationController {
     @PostMapping("/reseravtion")
     public ReservationResponseDto createReservation(@PathVariable Long roomId,
                                                     @RequestBody ReservationRequestDto requestDto,
-                                                    @AuthenticationPrincipal UserDetailsImpl userDetails){
+                                                    @AuthenticationPrincipal UserDetailsImpl userDetails) {
         User user = userDetails.getUser;
         return reservationService.createReservation(roomId, requestDto, user);
+    }
+
+    // 예약한 내역 확인 API
+    @GetMapping("/reservation/{reservationId}")
+    public ReservationResponseDto reservationDetail(@PathVariable Long roomId,
+                                                    @PathVariable Long reservationId,
+                                                    @AuthenticationPrincipal UserDetailsImpl userDetails) {
+
+        User user = userDetails.getUser;
+        return reservationService.reservationDetail(roomId, reservationId, user);
     }
 }
