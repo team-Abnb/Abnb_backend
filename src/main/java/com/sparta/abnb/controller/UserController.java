@@ -1,12 +1,12 @@
 package com.sparta.abnb.controller;
 
+import com.sparta.abnb.dto.responsedto.UserRequestDto;
 import com.sparta.abnb.dto.responsedto.UserResponseDto;
+import com.sparta.abnb.entity.User;
 import com.sparta.abnb.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
@@ -18,6 +18,13 @@ public class UserController {
     @GetMapping("/{userId}")
     public UserResponseDto getUserProfile(@PathVariable Long userId){
         return userService.getUserProfile(userId);
+    }
+    // 프로필 수정
+    @PutMapping("/{userId}")
+    public UserResponseDto updateUserProfile(@PathVariable Long userId, User user,
+                                             @RequestPart ("file") MultipartFile file,
+                                             @RequestPart("metadata") UserRequestDto userRequestDto){
+        return userService.updateUserProfile(userId, user, file, userRequestDto);
     }
 
 }
