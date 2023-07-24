@@ -31,4 +31,14 @@ public class ReservationController {
         User user = userDetails.getUser;
         return reservationService.reservationDetail(roomId, reservationId, user);
     }
+
+    // 예약 정보 수정 API
+    @PutMapping("/reservation/{reservationId}")
+    public ReservationResponseDto reservationUpdate(@PathVariable Long roomId,
+                                                    @PathVariable Long reservationId,
+                                                    @RequestBody ReservationRequestDto requestDto
+                                                    @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        User user = userDetails.getUser;
+        return reservationService.reservationUpdate(roomId, reservationId, requestDto, user);
+    }
 }
