@@ -105,7 +105,7 @@ public class JwtUtil {
     // JWT 토큰의 사용자 정보 가져오는 메서드
     public Claims getUserInfo(String tokenValue) {
         return Jwts.parserBuilder()
-                .setSigningKey(secretKey)
+                .setSigningKey(key)
                 .build()
                 .parseClaimsJws(tokenValue)
                 .getBody();
@@ -172,11 +172,9 @@ public class JwtUtil {
 
     // Redis에 최초 발급된 토큰 값 저장 (key : refreshToken / value : accessToken)
     public void saveTokenToRedis(String refreshToken, String accessToken) {
-        log.info("8");
         try {
             Date refreshExpire = getUserInfo(refreshToken).getExpiration(); // refresh 토큰의 만료일
             redisService.saveAccessToken(refreshToken, accessToken, refreshExpire);
-            log.info("10");
         } catch (Exception e) {
             log.error("Error", e.getMessage(), e);
         }
