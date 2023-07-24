@@ -17,5 +17,5 @@ public class WishlistResponseDto {
     private Long price;
     private String address;
     private String thumbnailImg;
-    private Integer isLike;
+    private Boolean isWishlist;
 }
