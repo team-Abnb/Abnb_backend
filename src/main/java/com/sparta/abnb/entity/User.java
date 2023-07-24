@@ -30,14 +30,15 @@ public class User extends Timestamped {
     @Column
     private String profilePicture;
 
-    @Column(nullable = false)
+    @Column
     private String phoneNumber;
 
     @Column
     private String bio;
 
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private UserRole userRole;
+    private UserRole role;
 
     // room과 연관관계
     @OneToMany(mappedBy = "user")
