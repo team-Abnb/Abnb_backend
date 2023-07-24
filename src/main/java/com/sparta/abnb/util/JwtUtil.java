@@ -5,7 +5,10 @@ import com.sparta.abnb.repository.UserRepository;
 import com.sparta.abnb.role.UserRole;
 import com.sparta.abnb.service.RedisService;
 import io.jsonwebtoken.*;
+import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
+import jakarta.annotation.PostConstruct;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +18,8 @@ import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import java.security.Key;
+import java.util.Base64;
 import java.util.Date;
 
 @Slf4j
@@ -25,44 +30,74 @@ public class JwtUtil {
     private RedisService redisService;
     private RedisTemplate<String, String> redisTemplate;
 
-    public  final String HEADER_ACCESS_TOKEN = "AccessToken";
+    public final String HEADER_ACCESS_TOKEN = "AccessToken";
+    public final String HEADER_REFRESH_TOKEN = "RefreshToken";
+    public static final String AUTHORIZATION_KEY = "auth";
     private final String BEARER = "Bearer ";
     private final Long ACCESS_TOKEN_EXPIRATION_TIME = 60 * 60 * 1000L; // 1시간
     private final Long REFRESSH_TOKEN_EXPIRATION_TIME = 14 * 24 * 60 * 60 * 1000L; // 2주
     private final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
-    private static Date date;
-
+    private Key key;
     @Value("${jwt.secret.key}") // Base64 Encode 한 SecretKey
     private String secretKey;
 
+    @PostConstruct
+    public void init() {
+        byte[] bytes = Base64.getDecoder().decode(secretKey);
+        key = Keys.hmacShaKeyFor(bytes);
+    }
+
     // JWT AccessToken 생성 메서드
-    public String createAccessToken(Long id, String username, UserRole userRole) {
+    public String createAccessToken(Long id, String username, UserRole role) {
+        Date date = new Date();
         return BEARER +
                 Jwts.builder()
                         .setSubject(String.valueOf(id)) // 토큰(사용자) 식별자 값
                         .claim("username", username)
-                        .claim("userRole", userRole)
+                        .claim(AUTHORIZATION_KEY, role)
                         .setExpiration(new Date(date.getTime() + ACCESS_TOKEN_EXPIRATION_TIME)) // 만료일
                         .setIssuedAt(date) // 발급일
-                        .signWith(signatureAlgorithm, secretKey) // 암호화 알고리즘, 시크릿 키
+                        .signWith(key, signatureAlgorithm) // 암호화 알고리즘, 시크릿 키
                         .compact();
     }
 
     // JWT RefreshToken 생성 메서드
     public String createRefreshToken(Long id) {
+        Date date = new Date();
         return BEARER +
                 Jwts.builder()
                         .setSubject(String.valueOf(id)) // 사용자 식별자값(ID)
                         .setExpiration(new Date(date.getTime() + REFRESSH_TOKEN_EXPIRATION_TIME)) // 만료 시간
                         .setIssuedAt(date) // 발급일
-                        .signWith(signatureAlgorithm, secretKey) // 암호화 알고리즘
+                        .signWith(key, signatureAlgorithm) // 암호화 알고리즘
                         .compact();
     }
 
+    public void addTokenToHeader(String accessToken, String refreshToken, HttpServletResponse response) {
+        response.setHeader(HEADER_ACCESS_TOKEN, accessToken);
+        response.setHeader(HEADER_REFRESH_TOKEN, refreshToken);
+    }
+
+    public String getAccessTokenFromHeader(HttpServletRequest request) {
+        String token = request.getHeader(HEADER_ACCESS_TOKEN);
+        if (StringUtils.hasText(token)) {
+            return substringToken(token);
+        }
+        return null;
+    }
+
+    public String getRefreshTokenFromHeader(HttpServletRequest request) {
+        String token = request.getHeader(HEADER_REFRESH_TOKEN);
+        if (StringUtils.hasText(token)) {
+            return substringToken(token);
+        }
+        return null;
+    }
+
     // JWT Bearer Substirng 메서드
-    public String substringToken(String token) {
-        if (StringUtils.hasText(token) && token.startsWith("Bearer")) {
-            return token.substring(7);
+    public String substringToken(String bearerToken) {
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER)) {
+            return bearerToken.substring(7);
         }
         throw new NullPointerException("토큰의 값이 존재하지 않습니다.");
     }
@@ -79,7 +114,7 @@ public class JwtUtil {
     // JWT 검증 메서드
     public boolean validateAccessToken(String accessToken) {
         try {
-            Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(accessToken); // key로 accessToken 검증
+            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(accessToken); // key로 accessToken 검증
             return true;
         } catch (SecurityException | MalformedJwtException | SignatureException e) {
             log.error("Invalid JWT signature, 유효하지 않는 JWT 서명 입니다.");
@@ -96,7 +131,7 @@ public class JwtUtil {
     // AccessToken, RefreshToken 검증 메서드
     public boolean validateRegenerate(String accessToken, String refreshToken) {
         // refreshToken이 없을 경우
-        if (accessToken.isEmpty() && accessToken != null || refreshToken.isEmpty() && refreshToken != null) {
+        if ((accessToken.isEmpty() && accessToken != null) || (refreshToken.isEmpty() && refreshToken != null)) {
             log.error("Access Token 또는 Refresh Token이 존재하지 않습니다.");
             throw new NullPointerException("Access Token 또는 Refresh Token이 존재하지 않습니다.");
         }
@@ -120,7 +155,7 @@ public class JwtUtil {
                 .orElseThrow(() -> new NullPointerException("해당 유저는 존재하지 않습니다."));
 
         String username = user.getUsername();
-        UserRole userRole = user.getUserRole();
+        UserRole userRole = user.getRole();
 
         String newAccessToken = createAccessToken(userId, username, userRole);
 
@@ -136,9 +171,16 @@ public class JwtUtil {
     }
 
     // Redis에 최초 발급된 토큰 값 저장 (key : refreshToken / value : accessToken)
-    public void saveAccessTokenFromRedis(String refreshToken, String accessToken){
-        Date refreshExpire = getUserInfo(refreshToken).getExpiration(); // refresh 토큰의 만료일
-        redisService.saveAccessToken(refreshToken, accessToken, refreshExpire);
+    public void saveTokenToRedis(String refreshToken, String accessToken) {
+        log.info("8");
+        try {
+            Date refreshExpire = getUserInfo(refreshToken).getExpiration(); // refresh 토큰의 만료일
+            log.info("9");
+            redisService.saveAccessToken(refreshToken, accessToken, refreshExpire);
+            log.info("10");
+        } catch (Exception e) {
+            log.error("Error", e.getMessage(), e);
+        }
     }
 
 //    위의 예제에서 "setKeyWithExpiration" 메서드는 Redis에 데이터를 저장하고, 해당 데이터를 주어진 만료 시간 후에 삭제하도록 설정합니다.
