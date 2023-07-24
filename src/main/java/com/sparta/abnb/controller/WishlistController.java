@@ -21,9 +21,9 @@ public class WishlistController {
     //좋아요 등록 / 삭제
     @PostMapping
     public ResponseEntity<String> createWishlist(
-            @RequestBody WishlistRequestDto wishlistRequestDto, HttpServletRequest req ) throws AccessDeniedException {
+            @RequestBody WishlistRequestDto wishlistRequestDto, @AuthenticationPrincipal UserDetailsImpl userDetails ) throws AccessDeniedException {
         Long targetRoomId = wishlistRequestDto.getRoomId();
-        return wishlistService.createWishlist(targetRoomId,req);
+        return wishlistService.createWishlist(targetRoomId,userDetails.getUser());
     }
 
     //좋아요 리스트 조회
