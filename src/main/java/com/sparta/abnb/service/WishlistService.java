@@ -8,8 +8,6 @@ import com.sparta.abnb.repository.RoomRepository;
 import com.sparta.abnb.repository.UserRepository;
 import com.sparta.abnb.repository.WishlistRepository;
 import com.sparta.abnb.util.JwtUtil;
-import io.jsonwebtoken.Claims;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -88,7 +86,7 @@ public class WishlistService {
                         .roomId(wish.getRoom().getRoomId())
                         .price(wish.getRoom().getPrice())
                         .thumbnailImg(wish.getRoom().getHomePicture())
-                        .isLike(1)
+                        .isWishlist(true)
                         .build())
                 .collect(Collectors.toList());
 
