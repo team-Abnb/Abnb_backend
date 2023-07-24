@@ -40,15 +40,17 @@ public class WishlistService {
 //        User user = findUserMethod(info);
 
         Long userId = user.getUserId();
-        // userId에 해당하는 wishlist DB를 조회 후 userId 기준으로 roomId를 조회
-        List<Wishlist> wishlists = wishlistRepository.findByUserId(userId);
-        Optional<Wishlist> roomIdInWishlists = wishlists.stream()
-                .filter(wishlist -> wishlist.getRoom().getRoomId().equals(targetRoomId))
-                .findFirst();
+        // userId에 해당하는 wishlist DB를 조회 후 userId roomId 기준으로 해당 좋아요를 조회
+        Optional <Wishlist> check_wishlist = wishlistRepository.findByUserIdAndRoomId(userId,targetRoomId);
+
+//        Optional<Wishlist> roomIdInWishlists = wishlists.stream()
+//                .filter(wishlist -> wishlist.getRoom().getRoomId().equals(targetRoomId))
+//                .findFirst();
+
 
         // 조회했을 때 targetRoomId가 있으면 좋아요 취소;
-        if(roomIdInWishlists.isPresent()){
-            wishlistRepository.deleteById(roomIdInWishlists.get().getWishlistId());
+        if(check_wishlist.isPresent()){
+            wishlistRepository.deleteById(check_wishlist.get().getWishlistId());
             return ResponseEntity.status(HttpStatus.OK).body("해당 ROOM의 좋아요를 취소하였습니다.");
         }
         // 조회했을 때 targetRoomId가 없으면 좋아요 등록
