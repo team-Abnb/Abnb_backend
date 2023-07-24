@@ -1,5 +1,6 @@
 package com.sparta.abnb.entity;
 
+import com.sparta.abnb.dto.requestdto.ReservationRequestDto;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -31,4 +32,12 @@ public class Reservation extends Timestamped {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "room_id")
     private Room room;
+
+    public void update(ReservationRequestDto requestDto, LocalDate checkInDate, LocalDate checkOutDate, Room reservationRoom, User user) {
+        this.reservationNumber = requestDto.getReservationNumber();
+        this.checkin = checkInDate;
+        this.checkout = checkOutDate;
+        this.user = user;
+        this.room = reservationRoom;
+    }
 }
