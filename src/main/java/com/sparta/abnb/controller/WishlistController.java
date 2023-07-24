@@ -28,8 +28,8 @@ public class WishlistController {
 
     //좋아요 리스트 조회
     @GetMapping
-    public List<WishlistResponseDto> getWishlists(HttpServletRequest req) throws AccessDeniedException {
-        return wishlistService.getWishlists(req);
+    public List<WishlistResponseDto> getWishlists(@AuthenticationPrincipal UserDetailsImpl userDetails ) throws AccessDeniedException {
+        return wishlistService.getWishlists(userDetails.getUser());
     }
 
 }
