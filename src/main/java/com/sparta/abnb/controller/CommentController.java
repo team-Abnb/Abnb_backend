@@ -7,6 +7,7 @@ import com.sparta.abnb.security.UserDetailsImpl;
 import com.sparta.abnb.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -17,9 +18,9 @@ public class CommentController {
     private final CommentService commentService;
     //후기 등록
     @PostMapping("/{roomId}/comment")
-    public ResponseEntity<String> createComment(
+    public ResponseEntity<CommentDto> createComment(
             @PathVariable Long roomId,
-            @RequestBody CommentRequestDto commentRequestDto
+            @RequestBody CommentRequestDto commentRequestDto,
             @AuthenticationPrincipal UserDetailsImpl userDetails){
         return commentService.createComment(roomId, commentRequestDto, userDetails.getUser());
     }
@@ -32,9 +33,9 @@ public class CommentController {
     @DeleteMapping("/{roomId}/comment/{commentId}")
     public ResponseEntity<String> deleteComment(
             @PathVariable Long roomId,
-            @PathVariable Long commentId
+            @PathVariable Long commentId,
             @AuthenticationPrincipal UserDetailsImpl userDetails){
-        return commentService.deleteComment(roomId,commentId, userDetials.getUser());
+        return commentService.deleteComment(roomId,commentId, userDetails.getUser());
     }
 
 }
