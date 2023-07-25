@@ -12,7 +12,7 @@ import lombok.*;
 public class RoomPicture {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long roomPictuerId;
+    private Long roomPictureId;
 
     @Column(nullable = false)
     private String urlLink;

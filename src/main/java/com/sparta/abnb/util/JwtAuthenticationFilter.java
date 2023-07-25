@@ -50,11 +50,13 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
         log.info("로그인 성공 및 JWT 생성");
-        Long id = ((UserDetailsImpl) authResult.getPrincipal()).getUser().getUserId();
-        UserRole role = ((UserDetailsImpl) authResult.getPrincipal()).getUser().getRole();
-        String username = ((UserDetailsImpl) authResult.getPrincipal()).getNickname();
-        String accessToken = jwtUtil.substringToken(jwtUtil.createAccessToken(id, username, role));
-        String refreshToken = jwtUtil.substringToken(jwtUtil.createRefreshToken(id));
+        User user = ((UserDetailsImpl) authResult.getPrincipal()).getUser();
+        Long id = user.getUserId();
+        UserRole role = user.getRole();
+        String username = user.getUsername();
+        String email = user.getEmail();
+        String accessToken = jwtUtil.createAccessToken(id, username, email, role);
+        String refreshToken = jwtUtil.createRefreshToken(id);
         jwtUtil.saveTokenToRedis(refreshToken, accessToken);
         jwtUtil.addTokenToHeader(accessToken, refreshToken, response);
         Map<String, Object> data = new LinkedHashMap<>();

@@ -48,14 +48,15 @@ public class RoomController {
     @GetMapping("{roomId}")
     public RoomResponseDto getRoom(@PathVariable Long roomId,
                                    @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        User user = userDetails.getUser();
+        User user = checkGuest(userDetails);
         return roomService.getSelectedRoom(roomId, user);
     }
 
     // room 수정하기
     @PutMapping("/{roomId}")
     public RoomResponseDto updateRoom(@PathVariable Long roomId,
-                                      @RequestBody @Valid RoomRequestDto roomRequestDto,
+                                      @RequestPart("data") RoomRequestDto roomRequestDto,
+//                                      @RequestBody @Valid RoomRequestDto roomRequestDto,
                                       @RequestPart("images") List<MultipartFile> files,
                                       @AuthenticationPrincipal UserDetailsImpl userDetails) throws AccessDeniedException {
         User user = userDetails.getUser();
@@ -69,6 +70,16 @@ public class RoomController {
                                              @AuthenticationPrincipal UserDetailsImpl userDetails) throws AccessDeniedException {
         User user = userDetails.getUser();
         return roomService.deleteRoom(roomId, user);
+    }
+
+    private User checkGuest(UserDetailsImpl userDetails) {
+        User user = null;
+        try {
+            user = userDetails.getUser();
+        } catch (NullPointerException e) {
+            log.info("게스트 사용자 입니다.");
+        }
+        return user;
     }
 
 }
