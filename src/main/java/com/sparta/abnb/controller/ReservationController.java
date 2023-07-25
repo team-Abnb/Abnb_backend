@@ -3,9 +3,11 @@ package com.sparta.abnb.controller;
 import com.sparta.abnb.dto.requestdto.ReservationRequestDto;
 import com.sparta.abnb.dto.responsedto.ReservationResponseDto;
 import com.sparta.abnb.entity.User;
+import com.sparta.abnb.security.UserDetailsImpl;
 import com.sparta.abnb.service.ReservationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.nio.file.AccessDeniedException;
@@ -43,7 +45,7 @@ public class ReservationController {
                                                     @RequestBody ReservationRequestDto requestDto,
                                                     @AuthenticationPrincipal UserDetailsImpl userDetails) throws AccessDeniedException {
 
-        User user = userDetails.getUser;
+        User user = userDetails.getUser();
         return reservationService.reservationUpdate(roomId, reservationId, requestDto, user);
     }
 
@@ -53,7 +55,7 @@ public class ReservationController {
                                                     @PathVariable Long reservationId,
                                                     @AuthenticationPrincipal UserDetailsImpl userDetails) throws AccessDeniedException {
 
-        User user = userDetails.getUser;
+        User user = userDetails.getUser();
         return reservationService.deleteReservation(roomId, reservationId, user);
     }
 }
