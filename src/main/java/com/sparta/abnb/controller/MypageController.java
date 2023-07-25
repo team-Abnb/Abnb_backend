@@ -1,8 +1,7 @@
 package com.sparta.abnb.controller;
 
-import com.sparta.abnb.dto.requestdto.UserRequestDto;
+import com.sparta.abnb.dto.requestdto.MypageRequestDto;
 import com.sparta.abnb.dto.responsedto.MypageResponseDto;
-import com.sparta.abnb.dto.responsedto.UserResponseDto;
 import com.sparta.abnb.security.UserDetailsImpl;
 import com.sparta.abnb.service.MypageService;
 import lombok.RequiredArgsConstructor;
@@ -25,9 +24,9 @@ public class MypageController {
     // 프로필 수정
     @PutMapping("/{userId}")
     public MypageResponseDto updateUserProfile(@PathVariable Long userId,
-                                             @AuthenticationPrincipal UserDetailsImpl userDetails,
-                                             @RequestPart("file") MultipartFile file,
-                                             @RequestPart("metadata") UserRequestDto userRequestDto){
-        return mypageService.updateUserProfile(userId, userDetails.getUser(), file, userRequestDto);
+                                               @AuthenticationPrincipal UserDetailsImpl userDetails,
+                                               @RequestPart("file") MultipartFile file,
+                                               @RequestPart("metadata") MypageRequestDto mypageRequestDto){
+        return mypageService.updateUserProfile(userId, userDetails.getUser(), file, mypageRequestDto);
     }
 }
