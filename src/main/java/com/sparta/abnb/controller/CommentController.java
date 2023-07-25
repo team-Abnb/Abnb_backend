@@ -1,7 +1,9 @@
 package com.sparta.abnb.controller;
 
 import com.sparta.abnb.dto.requestdto.CommentRequestDto;
+import com.sparta.abnb.dto.responsedto.CommentDto;
 import com.sparta.abnb.dto.responsedto.CommentResponseDto;
+import com.sparta.abnb.security.UserDetailsImpl;
 import com.sparta.abnb.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
