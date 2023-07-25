@@ -15,9 +15,6 @@ public class RoomPicture {
     private Long roomPictuerId;
 
     @Column(nullable = false)
-    private String roomPictureKey;
-
-    @Column(nullable = false)
     private String urlLink;
 
     // user와 연관관계
@@ -30,7 +27,7 @@ public class RoomPicture {
         this.room = room;
     }
     public void update(String urlLink, Room room) {
-        this.roomPictureKey = urlLink;
+        this.urlLink = urlLink;
         this.room = room;
     }
 }

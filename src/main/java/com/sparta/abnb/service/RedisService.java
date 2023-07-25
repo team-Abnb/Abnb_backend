@@ -19,7 +19,7 @@ public class RedisService {
     }
 
     // 최초 발급된 Access Token과 Refresh Token을 저장 (key : Access, value : refresh)
-    public void saveAccessToken(String accessToken, String refreshToken, Date refreshExpire) {
+    public void saveAccessToken(String refreshToken, String accessToken, Date refreshExpire) {
         redisTemplate.opsForValue().set(refreshToken, accessToken); // key : value
         redisTemplate.expireAt(refreshToken, refreshExpire); // 키 값에 해당 객체 만료일(자동삭제) 설정
     }
@@ -27,6 +27,6 @@ public class RedisService {
     // 해당 데이터를 삭제하는 메서드?
     // accessToken이 유효한데? refreshToken에 요청을 할 경우?
     public void deleteToken(String refreshToken) {
-        redisTemplate.unlink(refreshToken);
+        redisTemplate.delete(refreshToken);
     }
 }
