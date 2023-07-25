@@ -5,7 +5,10 @@ import com.sparta.abnb.dto.responsedto.ReservationResponseDto;
 import com.sparta.abnb.entity.User;
 import com.sparta.abnb.service.ReservationService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.nio.file.AccessDeniedException;
 
 @RestController
 @RequestMapping("/api/rooms/{roomId}")
@@ -18,6 +21,7 @@ public class ReservationController {
     public ReservationResponseDto createReservation(@PathVariable Long roomId,
                                                     @RequestBody ReservationRequestDto requestDto,
                                                     @AuthenticationPrincipal UserDetailsImpl userDetails) {
+
         User user = userDetails.getUser;
         return reservationService.createReservation(roomId, requestDto, user);
     }
@@ -26,7 +30,7 @@ public class ReservationController {
     @GetMapping("/reservation/{reservationId}")
     public ReservationResponseDto reservationDetail(@PathVariable Long roomId,
                                                     @PathVariable Long reservationId,
-                                                    @AuthenticationPrincipal UserDetailsImpl userDetails) {
+                                                    @AuthenticationPrincipal UserDetailsImpl userDetails) throws AccessDeniedException {
 
         User user = userDetails.getUser;
         return reservationService.reservationDetail(roomId, reservationId, user);
@@ -36,9 +40,20 @@ public class ReservationController {
     @PutMapping("/reservation/{reservationId}")
     public ReservationResponseDto reservationUpdate(@PathVariable Long roomId,
                                                     @PathVariable Long reservationId,
-                                                    @RequestBody ReservationRequestDto requestDto
-                                                    @AuthenticationPrincipal UserDetailsImpl userDetails) {
+                                                    @RequestBody ReservationRequestDto requestDto,
+                                                    @AuthenticationPrincipal UserDetailsImpl userDetails) throws AccessDeniedException {
+
         User user = userDetails.getUser;
         return reservationService.reservationUpdate(roomId, reservationId, requestDto, user);
+    }
+
+    // 예약 취소 API
+    @DeleteMapping("/reservation/{reservationId}")
+    public ResponseEntity<String> reservationDelete(@PathVariable Long roomId,
+                                                    @PathVariable Long reservationId,
+                                                    @AuthenticationPrincipal UserDetailsImpl userDetails) throws AccessDeniedException {
+
+        User user = userDetails.getUser;
+        return reservationService.deleteReservation(roomId, reservationId, user);
     }
 }
