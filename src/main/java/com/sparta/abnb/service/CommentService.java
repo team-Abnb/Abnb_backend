@@ -60,7 +60,7 @@ public class CommentService {
                 .map(comment -> CommentDto.builder()
                         .comment(comment.getComment())
                         .commentId(comment.getCommentId())
-                        .createdAt(comment.getCreateAt())
+                        .createdAt(comment.getCreatedAt())
                         .username(comment.getUser().getUsername())
                         .profilePicture(comment.getUser().getProfilePicture())
                         .build())
