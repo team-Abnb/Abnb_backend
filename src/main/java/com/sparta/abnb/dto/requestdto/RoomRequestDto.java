@@ -7,12 +7,14 @@ import com.sparta.abnb.entity.Wishlist;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
+import lombok.Builder;
 import lombok.Getter;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Builder
 @Getter
 public class RoomRequestDto {
     @NotEmpty(message = "title의 길이는 1에서 255 사이여야 합니다")

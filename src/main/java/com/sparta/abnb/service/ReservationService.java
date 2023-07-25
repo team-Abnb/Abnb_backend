@@ -9,6 +9,7 @@ import com.sparta.abnb.repository.ReservationRepository;
 import com.sparta.abnb.repository.RoomRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,11 +22,11 @@ import java.time.format.DateTimeFormatter;
 @Service
 @RequiredArgsConstructor
 public class ReservationService {
-    private ReservationRepository reservationRepository;
-    private RoomRepository roomRepository;
+    private final ReservationRepository reservationRepository;
+    private final RoomRepository roomRepository;
 
     // 예약하기 비즈니스 로직
-    public ReservationResponseDto createReservation(Long roomId, ReservationRequestDto reservationRequestDto, User user) {
+    public ResponseEntity<ReservationResponseDto> createReservation(Long roomId, ReservationRequestDto reservationRequestDto, User user) {
         Room room = roomRepository.findById(roomId)
                 .orElseThrow(() -> new NullPointerException("해당 숙소를 찾을 수 없습니다."));
 
@@ -43,16 +44,22 @@ public class ReservationService {
 
         reservationRepository.save(reservation);
 
-        return ReservationResponseDto.builder()
+        ReservationResponseDto reservationResponseDto = ReservationResponseDto.builder()
                 .reservationId(reservation.getReservationId())
                 .checkInDate(reservation.getCheckin())
                 .checkOutDate(reservation.getCheckout())
                 .reservationNumber(reservation.getReservationNumber())
+                .username(reservation.getUser().getUsername())
+                .roomTitle(reservation.getRoom().getTitle())
+                .createdAt(reservation.getCreatedAt())
+                .modifiedAt(reservation.getModifiedAt())
                 .build();
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(reservationResponseDto);
     }
 
     // 예약한 내역 확인 비즈니스 로직
-    public ReservationResponseDto reservationDetail(Long roomId, Long reservationId, User user) throws AccessDeniedException {
+    public ResponseEntity<ReservationResponseDto> reservationDetail(Long roomId, Long reservationId, User user) throws AccessDeniedException {
         // 예약 내역 조회
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new NullPointerException("해당 예약내역을 찾을 수 없습니다."));
@@ -71,17 +78,23 @@ public class ReservationService {
             throw new AccessDeniedException("예약 내역은 예약자 본인만 확인할 수 있습니다.");
         }
 
-        return ReservationResponseDto.builder()
+        ReservationResponseDto reservationResponseDto = ReservationResponseDto.builder()
                 .reservationId(reservation.getReservationId())
                 .checkInDate(reservation.getCheckin())
                 .checkOutDate(reservation.getCheckout())
                 .reservationNumber(reservation.getReservationNumber())
+                .username(reservation.getUser().getUsername())
+                .roomTitle(reservation.getRoom().getTitle())
+                .createdAt(reservation.getCreatedAt())
+                .modifiedAt(reservation.getModifiedAt())
                 .build();
+
+        return ResponseEntity.ok(reservationResponseDto);
     }
 
     // 예약 정보 수정 비즈니스 로직
     @Transactional
-    public ReservationResponseDto reservationUpdate(Long roomId, Long reservationId, ReservationRequestDto reservationRequestDto, User user) throws AccessDeniedException {
+    public ResponseEntity<ReservationResponseDto> reservationUpdate(Long roomId, Long reservationId, ReservationRequestDto reservationRequestDto, User user) throws AccessDeniedException {
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new NullPointerException("해당 예약 내역을 찾을 수 없습니다."));
 
@@ -105,12 +118,18 @@ public class ReservationService {
 
         reservation.update(reservationRequestDto, checkInDate, checkOutDate, reservationRoom, user);
 
-        return ReservationResponseDto.builder()
+        ReservationResponseDto reservationResponseDto = ReservationResponseDto.builder()
                 .reservationId(reservation.getReservationId())
                 .checkInDate(reservation.getCheckin())
                 .checkOutDate(reservation.getCheckout())
                 .reservationNumber(reservation.getReservationNumber())
+                .username(reservation.getUser().getUsername())
+                .roomTitle(reservation.getRoom().getTitle())
+                .createdAt(reservation.getCreatedAt())
+                .modifiedAt(reservation.getModifiedAt())
                 .build();
+
+        return ResponseEntity.ok(reservationResponseDto);
     }
 
     // 예약 취소 비즈니스 로직

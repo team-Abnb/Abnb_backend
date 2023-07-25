@@ -2,6 +2,7 @@ package com.sparta.abnb.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sparta.abnb.dto.requestdto.LoginRequestDto;
+import com.sparta.abnb.entity.User;
 import com.sparta.abnb.role.UserRole;
 import com.sparta.abnb.security.UserDetailsImpl;
 import jakarta.servlet.FilterChain;

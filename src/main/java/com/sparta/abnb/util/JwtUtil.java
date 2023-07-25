@@ -48,12 +48,13 @@ public class JwtUtil {
     }
 
     // JWT AccessToken 생성 메서드
-    public String createAccessToken(Long id, String username, UserRole role) {
+    public String createAccessToken(Long id, String username, String email, UserRole role) {
         Date date = new Date();
         return BEARER +
                 Jwts.builder()
                         .setSubject(String.valueOf(id)) // 토큰(사용자) 식별자 값
                         .claim("username", username)
+                        .claim("email", email)
                         .claim(AUTHORIZATION_KEY, role)
                         .setExpiration(new Date(date.getTime() + ACCESS_TOKEN_EXPIRATION_TIME)) // 만료일
                         .setIssuedAt(date) // 발급일
