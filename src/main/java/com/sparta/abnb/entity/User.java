@@ -56,4 +56,6 @@ public class User extends Timestamped {
     @OneToMany(mappedBy = "user")
     private List<Wishlist> wishlists = new ArrayList<>();
 
+    @OneToOne(mappedBy = "user")
+    private Mypage mypage;
 }

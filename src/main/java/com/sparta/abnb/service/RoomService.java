@@ -64,15 +64,15 @@ public class RoomService {
     public RoomResponseDto updateRoom(Long roomId, RoomRequestDto roomRequestDto, List<MultipartFile> multipartFiles, User user) throws AccessDeniedException {
         // 수정, 삭제 할 방이 존재하는지 확인
         Room room = findRoom(roomId);
-        List<RoomPicture> roomPictures = room.getRoomPictures();
+        // 수정, 삭제 할 사진이 존재하는지 확인
+        List<RoomPicture> roomPictures = findRoomPicture(room);
         // 수정, 삭제 할 방의 권한을 확인
         checkAuthority(room, user);
-        // 수정
-        // roomPicture도 수정 필요 ----------------------
-        List<String> urlLinks = room.getRoomPictures().stream().map(RoomPicture::getUrlLink).toList();
+        // 기존 url을 알려주면 기존의 파일을 삭제하고 새로운 url을 만들어서 반환 한뒤 update
         for (int i = 0; i < roomPictures.size(); i++) {
             RoomPicture roomPicture = roomPictures.get(i);
-            String newUrlLink = s3Util.updateImage(urlLinks.get(i), multipartFiles.get(i), ROOM_PICTURE_FOLDER);
+            String urlLink = roomPicture.getUrlLink();
+            String newUrlLink = s3Util.updateImage(urlLink, multipartFiles.get(i), ROOM_PICTURE_FOLDER);
             roomPicture.update(newUrlLink, room);
         }
         room.update(roomRequestDto);
@@ -97,9 +97,12 @@ public class RoomService {
                 new NullPointerException("존재하지 않는 방입니다."));
     }
 
-    protected RoomPicture findRoomPicture(Long roomPictureId) {
-        return roomPictureRepository.findById(roomPictureId).orElseThrow(() ->
-                new NullPointerException("존재하지 않는 사진입니다."));
+    protected List<RoomPicture> findRoomPicture(Room room) {
+        List<RoomPicture> roomPictures = room.getRoomPictures();
+        if (roomPictures.isEmpty()) {
+            new NullPointerException("존재하지 않는 사진입니다.");
+        }
+        return roomPictures;
     }
 
     // 수정, 삭제 할 방의 권한을 확인하는 메서드
