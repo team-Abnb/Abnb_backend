@@ -20,7 +20,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
-    private final RedisTemplate redisTemplate;
+    private final RedisService redisService;
     private final String ADMIN_TOKEN = "AAABnvxRVklrnYxKZ0aHgTBcXukeZygoC";
 
     @Transactional
@@ -63,7 +63,7 @@ public class UserService {
 
     public ResponseEntity<String> logOut(HttpServletRequest req) {
         String refreshToken = req.getHeader(jwtUtil.HEADER_REFRESH_TOKEN);
-        redisTemplate.delete(refreshToken);
+        redisService.deleteToken(refreshToken);
         return ResponseEntity.status(HttpStatus.OK).body("로그아웃 성공");
     }
 }
