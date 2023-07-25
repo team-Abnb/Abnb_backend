@@ -9,6 +9,7 @@ import com.sparta.abnb.repository.ReservationRepository;
 import com.sparta.abnb.repository.RoomRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -110,5 +111,28 @@ public class ReservationService {
                 .checkOutDate(reservation.getCheckout())
                 .reservationNumber(reservation.getReservationNumber())
                 .build();
+    }
+
+    // 예약 취소 비즈니스 로직
+    public ResponseEntity<String> deleteReservation(Long roomId, Long reservationId, User user) throws AccessDeniedException {
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new NullPointerException("해당 예약 내역을 찾을 수 없습니다."));
+
+        // 사용자가 요청 시 보낸 RoomId로 조회한 Room
+        Room requestRoom = roomRepository.findById(roomId)
+                .orElseThrow(() -> new NullPointerException("해당 숙소는 존재하지 않습니다."));
+        // 예약 내역에서 조회한 Room
+        Room reservationRoom = reservation.getRoom();
+
+        if (!requestRoom.equals(reservationRoom)) {
+            throw new IllegalArgumentException("요청하신 숙소와 예약하신 숙소가 다릅니다.");
+        }
+
+        if (reservation.getUser().getUserId() != user.getUserId()) {
+            throw new AccessDeniedException("예약 취소는 예약자 본인만 가능합니다.");
+        }
+
+        reservationRepository.delete(reservation);
+        return ResponseEntity.ok("예약 삭제");
     }
 }
