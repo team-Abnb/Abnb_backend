@@ -18,6 +18,9 @@ public class Comment extends Timestamped {
     @Column(columnDefinition = "TEXT")
     private String comment;
 
+    @Column
+    private Integer totalComment;
+
     // user와 연관관계
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
