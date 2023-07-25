@@ -26,7 +26,7 @@ public class WishlistService {
     private final JwtUtil jwtUtil;
     private final UserRepository userRepository;
     private final WishlistRepository wishlistRepository;
-    private final RoomRepository roomRepository;
+    private final RoomService roomService;
 
     @Transactional
     //좋아요 등록 / 삭제

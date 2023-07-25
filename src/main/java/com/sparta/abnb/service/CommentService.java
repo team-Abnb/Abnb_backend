@@ -23,6 +23,7 @@ public class CommentService {
 
     private final CommentRepository commentRepository;
     private final RoomRepository roomRepository;
+    private final RoomService roomService;
 
 
     //후기 작성
