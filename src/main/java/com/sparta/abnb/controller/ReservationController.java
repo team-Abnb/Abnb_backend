@@ -22,7 +22,7 @@ public class ReservationController {
                                                     @RequestBody ReservationRequestDto requestDto,
                                                     @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-        User user = userDetails.getUser;
+        User user = userDetails.getUser();
         return reservationService.createReservation(roomId, requestDto, user);
     }
 
@@ -32,7 +32,7 @@ public class ReservationController {
                                                     @PathVariable Long reservationId,
                                                     @AuthenticationPrincipal UserDetailsImpl userDetails) throws AccessDeniedException {
 
-        User user = userDetails.getUser;
+        User user = userDetails.getUser();
         return reservationService.reservationDetail(roomId, reservationId, user);
     }
 
