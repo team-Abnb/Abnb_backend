@@ -8,7 +8,6 @@ import com.sparta.abnb.util.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,7 +19,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
-    private final RedisTemplate redisTemplate;
+    private final RedisService redisService;
     private final String ADMIN_TOKEN = "AAABnvxRVklrnYxKZ0aHgTBcXukeZygoC";
 
     @Transactional
@@ -63,7 +62,7 @@ public class UserService {
 
     public ResponseEntity<String> logOut(HttpServletRequest req) {
         String refreshToken = req.getHeader(jwtUtil.HEADER_REFRESH_TOKEN);
-        redisTemplate.delete(refreshToken);
+        redisService.deleteToken(refreshToken);
         return ResponseEntity.status(HttpStatus.OK).body("로그아웃 성공");
     }
 }
