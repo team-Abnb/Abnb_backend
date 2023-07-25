@@ -52,7 +52,8 @@ public class CommentService {
 
     // 해당 Room의 전체 후기 조회
     public CommentResponseDto getComments(Long roomId){
-        List<Comment> commentList = commentRepository.findByRoomId(roomId);
+        Room room = roomService.findRoom(roomId);
+        List<Comment> commentList = commentRepository.findAllByRoom(room);
 
         if(commentList.isEmpty()){
             throw new IllegalArgumentException("해당 ROOM은 후기가 존재하지 않습니다.");
