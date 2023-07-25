@@ -6,13 +6,12 @@ import com.sparta.abnb.entity.User;
 import com.sparta.abnb.security.UserDetailsImpl;
 import com.sparta.abnb.service.RoomService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.nio.file.AccessDeniedException;
 import java.util.List;
 
@@ -26,8 +25,8 @@ public class RoomController {
 
 
     // 새로운 room 등록하기
-    @PostMapping()
-    public RoomResponseDto createRoom(@RequestBody @Valid RoomRequestDto roomRequestDto,
+    @PostMapping
+    public RoomResponseDto createRoom(@RequestPart("data") RoomRequestDto roomRequestDto,
                                       @RequestPart("images") List<MultipartFile> files,
                                       @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
@@ -37,7 +36,7 @@ public class RoomController {
     }
 
     // 특정 주제의 room 전체 조회
-    @GetMapping()
+    @GetMapping
     public List<RoomResponseDto> getRoomsByTheme(@RequestParam String theme,
                                                  @AuthenticationPrincipal UserDetailsImpl userDetails) {
         User user = checkGuest(userDetails);
@@ -45,7 +44,7 @@ public class RoomController {
     }
 
     // room 상세 조회하기
-    @GetMapping("{roomId}")
+    @GetMapping("/{roomId}")
     public RoomResponseDto getRoom(@PathVariable Long roomId,
                                    @AuthenticationPrincipal UserDetailsImpl userDetails) {
         User user = checkGuest(userDetails);
@@ -65,7 +64,7 @@ public class RoomController {
     }
 
     // room 삭제하기
-    @DeleteMapping("{roomId}")
+    @DeleteMapping("/{roomId}")
     public ResponseEntity<String> deleteRoom(@PathVariable Long roomId,
                                              @AuthenticationPrincipal UserDetailsImpl userDetails) throws AccessDeniedException {
         User user = userDetails.getUser();

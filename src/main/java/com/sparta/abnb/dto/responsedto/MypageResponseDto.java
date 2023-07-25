@@ -7,9 +7,10 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class MypageResponseDto {
+    private String email;
     private String username;
     private String phoneNumber;
-    private String profileImageUrl;
+    private String profilePicture;
     private String bio;
 
 }

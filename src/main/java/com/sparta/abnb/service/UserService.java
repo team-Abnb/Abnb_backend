@@ -27,6 +27,9 @@ public class UserService {
     private final RedisService redisService;
     private final String ADMIN_TOKEN = "AAABnvxRVklrnYxKZ0aHgTBcXukeZygoC";
 
+    @Value("${app.default.profile.image}")
+    private String defaultProfileImage;
+
     @Transactional
     public ResponseEntity<String> signUp(UserRequestDto userRequestDto) {
         String email = userRequestDto.getEmail();
@@ -53,8 +56,10 @@ public class UserService {
                 .email(email)
                 .password(password)
                 .username(username)
+                .profilePicture(defaultProfileImage)
                 .role(role) // role 필드 설정 추가
                 .build();
+
         userRepository.save(user);
         return ResponseEntity.status(HttpStatus.CREATED).body("회원가입 성공");
     }

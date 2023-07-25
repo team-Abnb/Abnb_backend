@@ -10,6 +10,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Builder
+@Getter
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class ReservationResponseDto {
     private Long reservationId;
     @JsonFormat(pattern = "yyyy-MM-dd")

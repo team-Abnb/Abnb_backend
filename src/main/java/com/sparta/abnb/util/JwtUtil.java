@@ -34,7 +34,7 @@ public class JwtUtil {
     public final String HEADER_REFRESH_TOKEN = "RefreshToken";
     public static final String AUTHORIZATION_KEY = "auth";
     private final String BEARER = "Bearer ";
-    private final Long ACCESS_TOKEN_EXPIRATION_TIME = 60 * 60 * 1000L; // 1시간
+    private final Long ACCESS_TOKEN_EXPIRATION_TIME = 60 * 60 * 3000L; // 1시간
     private final Long REFRESSH_TOKEN_EXPIRATION_TIME = 14 * 24 * 60 * 60 * 1000L; // 2주
     private final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
     private Key key;

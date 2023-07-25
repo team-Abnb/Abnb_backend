@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class MypageService {
 
@@ -25,20 +26,21 @@ public class MypageService {
     private final S3Util s3Util;
 
     //마이페이지 조회
-    public MypageResponseDto getUserProfile(Long userId) {
+    public ResponseEntity<MypageResponseDto> getUserProfile(Long userId) {
         User checkuser =  userRepository.findById(userId).orElseThrow(()
                 -> new IllegalArgumentException("해당 USER가 존재하지 않습니다."));
 
-
-        return MypageResponseDto.builder()
-                .profileImageUrl(checkuser.getProfilePicture())
+        MypageResponseDto mypageResponseDto = MypageResponseDto.builder()
+                .profilePicture(checkuser.getProfilePicture())
                 .username(checkuser.getUsername())
                 .bio(checkuser.getBio())
                 .build();
+
+        return ResponseEntity.status(HttpStatus.OK).body(mypageResponseDto);
     }
     // 프로필 수정
     @Transactional
-    public MypageResponseDto updateUserProfile(Long userId, User user, MultipartFile file, MypageRequestDto mypageRequestDto) {
+    public ResponseEntity<MypageResponseDto> updateUserProfile(Long userId, User user, MultipartFile file, MypageRequestDto mypageRequestDto) {
 
         if (!user.getUserId().equals(userId)) {
             throw new IllegalArgumentException("해당 USER가 아닙니다.");
@@ -60,24 +62,31 @@ public class MypageService {
         if (file != null) {
             // 기본이미지를 보내주거나? 새로운 이미지르 보내주거나
             url = s3Util.updateImage(user.getProfilePicture(), file, "profilePicture");
+            log.info("업데이트 후 url " + url);
         }
         // entity 저장
         User updateUser = User.builder()
+                .email(user.getEmail())
                 .username(mypageRequestDto.getUsername())
                 .phoneNumber(mypageRequestDto.getPhoneNumber())
                 .bio(mypageRequestDto.getBio())
+                .role(user.getRole())
                 .profilePicture(file == null ? user.getProfilePicture() : url)
                 .password(mypageRequestDto.getPassword() != null ? newPassword : user.getPassword())
                 .build();
 
         userRepository.save(updateUser);
         //entity -> responseDto
-        return MypageResponseDto.builder()
+        MypageResponseDto mypageResponseDto = MypageResponseDto.builder()
+                .email(user.getEmail())
                 .username(updateUser.getUsername())
                 .phoneNumber(updateUser.getPhoneNumber())
                 .bio(updateUser.getBio())
-                .profileImageUrl(updateUser.getProfilePicture())
+                .profilePicture(updateUser.getProfilePicture())
                 .build();
+
+        return ResponseEntity.status(HttpStatus.OK).body(mypageResponseDto);
+
 
     }
 
