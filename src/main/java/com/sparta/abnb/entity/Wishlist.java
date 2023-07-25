@@ -22,4 +22,7 @@ public class Wishlist {
     @JoinColumn(name ="user_id")
     private User user;
 
+    public boolean hasUserId(Long userId) {
+        return this.user != null && this.user.getUserId().equals(userId);
+    }
 }
