@@ -1,5 +1,6 @@
 package com.sparta.abnb.entity;
 
+import com.sparta.abnb.role.UserRole;
 import jakarta.persistence.*;
 import lombok.Getter;
 import org.springframework.data.annotation.CreatedDate;
@@ -16,11 +17,12 @@ public abstract class Timestamped{
     @CreatedDate
     @Temporal(TemporalType.TIMESTAMP)
     @Column(updatable = false)
-    private LocalDateTime  createAt;
+    private LocalDateTime  createdAt;
 
 
     @LastModifiedDate
     @Column
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime modifiedAt;
+
 }
