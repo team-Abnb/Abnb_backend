@@ -30,8 +30,6 @@ public class S3Util {
             throw new IllegalArgumentException("사진 없이는 등록이 불가능합니다.");
         }
 
-//        String filename = multipartFile.getOriginalFilename();
-
         String randomUuid = UUID.randomUUID().toString();
         String key = folderName + "/" + randomUuid;
 
@@ -54,7 +52,6 @@ public class S3Util {
         if(!amazonS3.doesObjectExist(bucket,key)){
             throw new NullPointerException("해당 이미지가 존재하지 않습니다.");
         }
-        //amazonS3.getUrl(bucket, key);
         amazonS3.deleteObject(bucket, key);
     }
 
