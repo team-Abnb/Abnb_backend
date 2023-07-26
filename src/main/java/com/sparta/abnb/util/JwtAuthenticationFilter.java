@@ -61,14 +61,6 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         jwtUtil.saveTokenToRedis(refreshToken, accessToken);
         jwtUtil.addTokenToHeader(accessToken, refreshToken, response);
 
-//        Map<String, Object> data = new LinkedHashMap<>();
-//        data.put("success", true);
-//        data.put("statusCode", HttpServletResponse.SC_OK);
-//        data.put("msg", "로그인 성공");
-
-//        ObjectMapper mapper = new ObjectMapper();
-//        String jsonString = mapper.writeValueAsString(data);
-
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 //        response.getWriter().write(jsonString);
@@ -92,7 +84,6 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         // 응답에 에러 메시지 전송
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
-//        response.getWriter().write(errorJson);
         response.sendError(HttpServletResponse.SC_BAD_REQUEST, "로그인 실패");
     }
 }
