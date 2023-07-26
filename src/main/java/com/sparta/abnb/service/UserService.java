@@ -8,20 +8,26 @@ import com.sparta.abnb.util.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.RedisTemplate;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+@Slf4j(topic = "유저 서비스")
 @Service
 @RequiredArgsConstructor
 public class UserService {
+
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
-    private final RedisTemplate redisTemplate;
+    private final RedisService redisService;
     private final String ADMIN_TOKEN = "AAABnvxRVklrnYxKZ0aHgTBcXukeZygoC";
+
+    @Value("${app.default.profile.image}")
+    private String defaultProfileImage;
 
     @Transactional
     public ResponseEntity<String> signUp(UserRequestDto userRequestDto) {
@@ -41,14 +47,18 @@ public class UserService {
             }
             role = UserRole.ADMIN;
         }
+        log.info("디폴트 이미지 테스트!!!!!!!!!!");
+        System.out.println("userRequestDto = " + userRequestDto.getProfilePicture());
 
         // 사용자 등록
         User user = User.builder()
                 .email(email)
                 .password(password)
                 .username(username)
+                .profilePicture(defaultProfileImage)
                 .role(role) // role 필드 설정 추가
                 .build();
+
         userRepository.save(user);
         return ResponseEntity.status(HttpStatus.CREATED).body("회원가입 성공");
     }
@@ -63,7 +73,7 @@ public class UserService {
 
     public ResponseEntity<String> logOut(HttpServletRequest req) {
         String refreshToken = req.getHeader(jwtUtil.HEADER_REFRESH_TOKEN);
-        redisTemplate.delete(refreshToken);
+        redisService.deleteToken(refreshToken);
         return ResponseEntity.status(HttpStatus.OK).body("로그아웃 성공");
     }
 }

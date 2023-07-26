@@ -25,12 +25,12 @@ public class RoomResponseDto {
     private String createdAt;
     private String modifiedAt;
 
-    public RoomResponseDto(Room room, User user) {
+    public RoomResponseDto(Room room, User user, List<RoomPicture> roomPictures) {
         this.roomId = room.getRoomId();
         this.title = room.getTitle();
         this.content = room.getContent();
         this.maxPeople = room.getMaxPeople();
-        this.roomPictures = room.getRoomPictures()
+        this.roomPictures = roomPictures
                 .stream()
                 .map(RoomPicture::getUrlLink)
                 .toList();
@@ -43,7 +43,7 @@ public class RoomResponseDto {
         this.isWishList = room.getWishlists()
                 .stream()
                 .anyMatch(wishlist ->
-                        wishlist.hasUserId(user.getUserId())
+                        wishlist.hasUserId(user == null ? 0 : user.getUserId())
                 );
         this.createdAt = room.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
         this.modifiedAt = room.getModifiedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));

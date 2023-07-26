@@ -16,21 +16,21 @@ public class Reservation extends Timestamped {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long reservationId;
 
-    @Column
+    @Column(nullable = false)
     private Long reservationNumber; // 예약 인원
 
-    @Column(columnDefinition = "DATE")
+    @Column(nullable = false)
     private LocalDate checkin; // 체크인
 
-    @Column(columnDefinition = "DATE")
+    @Column(nullable = false)
     private LocalDate checkout; // 체크아웃
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "room_id")
+    @JoinColumn(name = "room_id", nullable = false)
     private Room room;
 
     public void update(ReservationRequestDto requestDto, LocalDate checkInDate, LocalDate checkOutDate, Room reservationRoom, User user) {

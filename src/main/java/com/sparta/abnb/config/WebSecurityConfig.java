@@ -19,8 +19,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import static org.springframework.boot.autoconfigure.security.servlet.PathRequest.toH2Console;
-
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -68,15 +66,17 @@ public class WebSecurityConfig {
                         .requestMatchers("/").permitAll() // 메인 페이지 요청 허가
                         .requestMatchers("/api/users/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/rooms").permitAll()
-                        .requestMatchers("/api/comments/**").permitAll()
-                        .requestMatchers(toH2Console()).permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/rooms/{id}").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/rooms/{id}/comments/**").permitAll()
                         .anyRequest().authenticated() // 그 외 요청은 인증 필요
         );
 
         // 필터 관리
+
         http.addFilterBefore(corsConfig.corsFilter(), UsernamePasswordAuthenticationFilter.class);
         http.addFilterBefore(jwtAuthorizationFilter(), JwtAuthenticationFilter.class);
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+
 
         return http.build();
     }

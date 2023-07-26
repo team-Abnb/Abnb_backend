@@ -12,10 +12,7 @@ import lombok.*;
 public class RoomPicture {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long roomPictuerId;
-
-    @Column(nullable = false)
-    private String roomPictureKey;
+    private Long roomPictureId;
 
     @Column(nullable = false)
     private String urlLink;
@@ -30,7 +27,7 @@ public class RoomPicture {
         this.room = room;
     }
     public void update(String urlLink, Room room) {
-        this.roomPictureKey = urlLink;
+        this.urlLink = urlLink;
         this.room = room;
     }
 }

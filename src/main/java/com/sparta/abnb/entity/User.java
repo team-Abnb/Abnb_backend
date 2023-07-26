@@ -1,5 +1,6 @@
 package com.sparta.abnb.entity;
 
+import com.sparta.abnb.dto.requestdto.MypageRequestDto;
 import com.sparta.abnb.role.UserRole;
 import jakarta.persistence.*;
 import lombok.*;
@@ -56,4 +57,15 @@ public class User extends Timestamped {
     @OneToMany(mappedBy = "user")
     private List<Wishlist> wishlists = new ArrayList<>();
 
+    @OneToOne(mappedBy = "user")
+    private Mypage mypage;
+
+    public void updateUser(User user, MypageRequestDto mypageRequestDto, String newPassword, String newProfilePicture) {
+        this.email = user.getEmail();
+        this.bio = mypageRequestDto.getBio();
+        this.password = newPassword;
+        this.profilePicture = newProfilePicture;
+        this.role = user.getRole();
+        this.username = mypageRequestDto.getUsername();
+    }
 }
