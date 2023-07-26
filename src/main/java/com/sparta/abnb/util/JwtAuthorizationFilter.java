@@ -63,6 +63,8 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                 return;
             }
         }
+        //
+        log.info("로그인 하지 않은 사용자");
         filterChain.doFilter(req, res);
     }
 

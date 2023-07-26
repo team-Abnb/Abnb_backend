@@ -27,7 +27,7 @@ public class RoomController {
     // 새로운 room 등록하기
     @PostMapping
     public RoomResponseDto createRoom(@RequestPart("data") RoomRequestDto roomRequestDto,
-                                      @RequestPart("images") List<MultipartFile> files,
+                                      @RequestPart(name = "images", required = false) List<MultipartFile> files,
                                       @AuthenticationPrincipal UserDetailsImpl userDetails) {
         User user = userDetails.getUser();
         return roomService.createRoom(roomRequestDto, files, user);
