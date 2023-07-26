@@ -27,11 +27,9 @@ public class RoomRequestDto {
 
     private Integer maxPeople;
 
-//    @NotEmpty(message = "최소 1장이상의 사진이 필요합니다")
-//    @Size(min = 1, max = 10000, message = "최소 1장이상의 사진이 필요합니다")
-//    private List<MultipartFile> roomPictures;
-
     private String theme;
+
     private Long price;
+
     private String address;
 }
