@@ -25,12 +25,12 @@ public class RoomResponseDto {
     private String createdAt;
     private String modifiedAt;
 
-    public RoomResponseDto(Room room, User user) {
+    public RoomResponseDto(Room room, User user, List<RoomPicture> roomPictures) {
         this.roomId = room.getRoomId();
         this.title = room.getTitle();
         this.content = room.getContent();
         this.maxPeople = room.getMaxPeople();
-        this.roomPictures = room.getRoomPictures()
+        this.roomPictures = roomPictures
                 .stream()
                 .map(RoomPicture::getUrlLink)
                 .toList();

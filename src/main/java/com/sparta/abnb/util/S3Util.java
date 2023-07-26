@@ -2,8 +2,8 @@ package com.sparta.abnb.util;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.sparta.abnb.entity.Room;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.UUID;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class S3Util {
@@ -26,7 +27,7 @@ public class S3Util {
     // putObject가 등록뿐 아니라 수정도 되는 것으로 추정
     // urlLink 반환 메서드
     public String uploadImage(MultipartFile multipartFile, String folderName) {
-        if(multipartFile == null){
+        if (multipartFile.isEmpty()) {
             throw new IllegalArgumentException("사진 없이는 등록이 불가능합니다.");
         }
 
@@ -46,10 +47,10 @@ public class S3Util {
     }
 
     //이미지 삭제
-    public void deleteImage(String urlLink)  {
+    public void deleteImage(String urlLink) {
 
         String key = urlLink.substring(s3HostUrl.length());
-        if(!amazonS3.doesObjectExist(bucket,key)){
+        if (!amazonS3.doesObjectExist(bucket, key)) {
             throw new NullPointerException("해당 이미지가 존재하지 않습니다.");
         }
         amazonS3.deleteObject(bucket, key);
