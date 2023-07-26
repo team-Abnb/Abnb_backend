@@ -22,6 +22,8 @@ repositories {
 }
 
 dependencies {
+	// Mockito
+	testImplementation 'org.mockito:mockito-all:1.9.5'
 	// s3
 	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
 	// mapstruct
