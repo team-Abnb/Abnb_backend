@@ -10,6 +10,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -59,17 +60,20 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         String refreshToken = jwtUtil.createRefreshToken(id);
         jwtUtil.saveTokenToRedis(refreshToken, accessToken);
         jwtUtil.addTokenToHeader(accessToken, refreshToken, response);
-        Map<String, Object> data = new LinkedHashMap<>();
-        data.put("success", true);
-        data.put("statusCode", HttpServletResponse.SC_OK);
-        data.put("msg", "로그인 성공");
+
+//        Map<String, Object> data = new LinkedHashMap<>();
+//        data.put("success", true);
+//        data.put("statusCode", HttpServletResponse.SC_OK);
+//        data.put("msg", "로그인 성공");
 
         ObjectMapper mapper = new ObjectMapper();
         String jsonString = mapper.writeValueAsString(data);
 
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
-        response.getWriter().write(jsonString);
+//        response.getWriter().write(jsonString);
+        response.setStatus(HttpServletResponse.SC_OK);
+        response.sendError(HttpServletResponse.SC_OK, "로그인 성공");
     }
 
     @Override
@@ -88,7 +92,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         // 응답에 에러 메시지 전송
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
-        response.getWriter().write(errorJson);
-        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+//        response.getWriter().write(errorJson);
+        response.sendError(HttpServletResponse.SC_BAD_REQUEST, "로그인 실패");
     }
 }
