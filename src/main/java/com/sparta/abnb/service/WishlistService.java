@@ -67,19 +67,4 @@ public class WishlistService {
         return wishlistResponseDtos;
     }
 
-    // 토큰을 검증하는 메소드 <token -> substring -> 검증>
-//    private String checkToken(HttpServletRequest req) throws AccessDeniedException {
-//        String token = req.getHeader(jwtUtil.HEADER_ACCESS_TOKEN);
-//        String tokenValue = jwtUtil.substringToken(token);
-//        if (!jwtUtil.validateAccessToken(tokenValue)) {
-//            throw new AccessDeniedException("유효하지 않은 토큰입니다.");
-//        }
-//         return tokenValue;
-//    }
-
-    // user가 존재하는지 확인하는 메서드
-//    private User findUserMethod(User user) {
-//          return userRepository.findByEmail(user.getEmail()).orElseThrow(()
-//                  ->  new IllegalArgumentException("해당 USER가 존재하지 않습니다."));
-//    }
 }
