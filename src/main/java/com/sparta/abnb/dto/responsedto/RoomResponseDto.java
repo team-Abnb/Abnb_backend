@@ -39,7 +39,7 @@ public class RoomResponseDto {
         this.address = room.getAddress();
         this.userId = room.getUser().getUserId();
         this.userName = room.getUser().getUsername();
-        this.userProfilePicture = getUserProfilePicture();
+        this.userProfilePicture = room.getUser().getProfilePicture();
         this.isWishList = room.getWishlists()
                 .stream()
                 .anyMatch(wishlist ->
