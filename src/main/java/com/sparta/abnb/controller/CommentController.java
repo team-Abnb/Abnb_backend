@@ -17,7 +17,7 @@ public class CommentController {
 
     private final CommentService commentService;
     //후기 등록
-    @PostMapping("/{roomId}/comment")
+    @PostMapping("/{roomId}/comments")
     public ResponseEntity<CommentDto> createComment(
             @PathVariable Long roomId,
             @RequestBody CommentRequestDto commentRequestDto,
@@ -25,12 +25,12 @@ public class CommentController {
         return commentService.createComment(roomId, commentRequestDto, userDetails.getUser());
     }
     //후기 조회
-    @GetMapping("/{roomId}/comment")
+    @GetMapping("/{roomId}/comments")
     public ResponseEntity<CommentResponseDto> getComments(@PathVariable Long roomId){
         return commentService.getComments(roomId);
     }
     //후기 삭제
-    @DeleteMapping("/{roomId}/comment/{commentId}")
+    @DeleteMapping("/{roomId}/comments/{commentId}")
     public ResponseEntity<String> deleteComment(
             @PathVariable Long roomId,
             @PathVariable Long commentId,

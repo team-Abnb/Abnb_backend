@@ -67,11 +67,12 @@ public class WebSecurityConfig {
                         .requestMatchers("/api/users/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/rooms").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/rooms/{id}").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/rooms/comments/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/rooms/{id}/comments/**").permitAll()
                         .anyRequest().authenticated() // 그 외 요청은 인증 필요
         );
 
         // 필터 관리
+
         http.addFilterBefore(corsConfig.corsFilter(), UsernamePasswordAuthenticationFilter.class);
         http.addFilterBefore(jwtAuthorizationFilter(), JwtAuthenticationFilter.class);
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
