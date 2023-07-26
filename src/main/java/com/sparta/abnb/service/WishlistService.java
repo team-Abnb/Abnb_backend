@@ -59,7 +59,7 @@ public class WishlistService {
                         .address(wish.getRoom().getAddress())
                         .roomId(wish.getRoom().getRoomId())
                         .price(wish.getRoom().getPrice())
-                        .thumbnailImg(wish.getRoom().getRoomPictures().get(0).getUrlLink())
+                        .thumbnailImg(roomService.findRoomPicture(wish.getRoom()).get(0).getUrlLink())
                         .isWishlist(true)
                         .build())
                 .collect(Collectors.toList());
