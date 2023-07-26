@@ -26,7 +26,7 @@ public class CommentController {
     }
     //후기 조회
     @GetMapping("/{roomId}/comment")
-    public CommentResponseDto getComments(@PathVariable Long roomId){
+    public ResponseEntity<CommentResponseDto> getComments(@PathVariable Long roomId){
         return commentService.getComments(roomId);
     }
     //후기 삭제

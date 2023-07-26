@@ -30,8 +30,6 @@ public class RoomService {
     private final S3Util s3Util;
     private final String ROOM_PICTURE_FOLDER = "roomPicture";
     // 등록과정
-    // transactional로 이미지가 없을 경우 날림
-    @Transactional
     public RoomResponseDto createRoom(RoomRequestDto roomRequestDto, List<MultipartFile> multipartFiles, User user) {
         // room 등록
         Room room = new Room(roomRequestDto, user);
@@ -62,18 +60,14 @@ public class RoomService {
         // 수정, 삭제 할 방이 존재하는지 확인
         Room room = findRoom(roomId);
         // 수정, 삭제 할 사진이 존재하는지 확인
-        findRoomPicture(room);
+        List<RoomPicture> roomPictures = findRoomPicture(room);
         // 수정, 삭제 할 방의 권한을 확인
         checkAuthority(room, user);
-        List<RoomPicture> roomPictures;
-        // 프론트엔드에게 물어보고 확인하기
-        if (!multipartFiles.get(0).isEmpty()) {
+        if (checkFile(multipartFiles)) {
             // 기존 url를 통해 url삭제후 roompicture 삭제
             deleteRoomPictureUrlLinks(room);
             // url 생성, url값 담은 roompicture 생성
             roomPictures = createRoomPictureUrlLinks(room, multipartFiles);
-        } else {
-            roomPictures = findRoomPicture(room);
         }
 
         room.update(roomRequestDto);
@@ -101,12 +95,18 @@ public class RoomService {
                 new NullPointerException("존재하지 않는 방입니다."));
     }
 
+    public Boolean checkFile(List<MultipartFile> multipartFiles) {
+        if (multipartFiles.isEmpty()) {
+            return false;
+        }
+        return true;
+    }
+
     protected List<RoomPicture> findRoomPicture(Room room) {
         List<RoomPicture> roomPictures= roomPictureRepository.findAllByRoom(room);
         if (roomPictures.isEmpty()) {
             new NullPointerException("존재하지 않는 사진입니다.");
         }
-        log.info(String.valueOf(roomPictures.size()));
         return roomPictures;
     }
 

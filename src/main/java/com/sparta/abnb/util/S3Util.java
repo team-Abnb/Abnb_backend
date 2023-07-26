@@ -43,6 +43,7 @@ public class S3Util {
         } catch (IOException e) {
             throw new RuntimeException("이미지 등록중 에러 발생 : " + e.getMessage());
         }
+
         return amazonS3.getUrl(bucket, key).toString();
     }
 

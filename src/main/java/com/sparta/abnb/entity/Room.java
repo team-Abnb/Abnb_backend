@@ -27,10 +27,6 @@ public class Room extends Timestamped {
     @Column(nullable = false)
     private Integer maxPeople;
 
-//    // room을 먼저 만들고 이후에 roompictures를 추가하면서 자연스럽게 roomPictures 부분은 채워짐
-//    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL)
-//    private List<RoomPicture> roomPictures = new ArrayList<>();
-
     @Column(nullable = false)
     private String theme;
 
