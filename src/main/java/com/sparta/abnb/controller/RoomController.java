@@ -27,11 +27,9 @@ public class RoomController {
     // 새로운 room 등록하기
     @PostMapping
     public RoomResponseDto createRoom(@RequestPart("data") RoomRequestDto roomRequestDto,
-                                      @RequestPart("images") List<MultipartFile> files,
+                                      @RequestPart(name = "images", required = false) List<MultipartFile> files,
                                       @AuthenticationPrincipal UserDetailsImpl userDetails) {
-
         User user = userDetails.getUser();
-
         return roomService.createRoom(roomRequestDto, files, user);
     }
 
@@ -55,8 +53,7 @@ public class RoomController {
     @PutMapping("/{roomId}")
     public RoomResponseDto updateRoom(@PathVariable Long roomId,
                                       @RequestPart("data") RoomRequestDto roomRequestDto,
-//                                      @RequestBody @Valid RoomRequestDto roomRequestDto,
-                                      @RequestPart("images") List<MultipartFile> files,
+                                      @RequestPart(name = "images", required = false) List<MultipartFile> files,
                                       @AuthenticationPrincipal UserDetailsImpl userDetails) throws AccessDeniedException {
         User user = userDetails.getUser();
         return roomService.updateRoom(roomId, roomRequestDto, files, user);

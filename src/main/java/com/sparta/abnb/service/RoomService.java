@@ -31,6 +31,9 @@ public class RoomService {
     private final String ROOM_PICTURE_FOLDER = "roomPicture";
     // 등록과정
     public RoomResponseDto createRoom(RoomRequestDto roomRequestDto, List<MultipartFile> multipartFiles, User user) {
+        if(!isFile(multipartFiles)) {
+            throw new IllegalArgumentException("사진없이는 방을 등록할 수 없습니다.");
+        }
         // room 등록
         Room room = new Room(roomRequestDto, user);
         Room saveRoom = roomRepository.save(room);
@@ -60,17 +63,14 @@ public class RoomService {
         // 수정, 삭제 할 방이 존재하는지 확인
         Room room = findRoom(roomId);
         // 수정, 삭제 할 사진이 존재하는지 확인
-        findRoomPicture(room);
+        List<RoomPicture> roomPictures = findRoomPicture(room);
         // 수정, 삭제 할 방의 권한을 확인
         checkAuthority(room, user);
-        List<RoomPicture> roomPictures;
-        if (checkfile(multipartFiles)) {
+        if (isFile(multipartFiles)) {
             // 기존 url를 통해 url삭제후 roompicture 삭제
             deleteRoomPictureUrlLinks(room);
             // url 생성, url값 담은 roompicture 생성
             roomPictures = createRoomPictureUrlLinks(room, multipartFiles);
-        } else {
-            roomPictures = findRoomPicture(room);
         }
 
         room.update(roomRequestDto);
@@ -98,11 +98,12 @@ public class RoomService {
                 new NullPointerException("존재하지 않는 방입니다."));
     }
 
-    public Boolean checkfile(List<MultipartFile> multipartFiles) {
-        if (multipartFiles.isEmpty()) {
+    public Boolean isFile(List<MultipartFile> multipartFiles) {
+        try {
+            return !multipartFiles.get(0).isEmpty();
+        } catch (NullPointerException e) {
             return false;
         }
-        return true;
     }
 
     protected List<RoomPicture> findRoomPicture(Room room) {
@@ -110,7 +111,6 @@ public class RoomService {
         if (roomPictures.isEmpty()) {
             new NullPointerException("존재하지 않는 사진입니다.");
         }
-        log.info(String.valueOf(roomPictures.size()));
         return roomPictures;
     }
 
@@ -131,7 +131,6 @@ public class RoomService {
         for (RoomPicture roomPicture : roomPictures) {
             String urlLink = roomPicture.getUrlLink();
             s3Util.deleteImage(urlLink);
-            // 딱 여기만 안됨...
             roomPictureRepository.deleteById(roomPicture.getRoomPictureId());
         }
     }

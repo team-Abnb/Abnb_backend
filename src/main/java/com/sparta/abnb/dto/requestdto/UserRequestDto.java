@@ -18,6 +18,8 @@ public class UserRequestDto {
     @NotBlank(message = "이름 공백 불가")
     private String username;
 
+    private String phoneNumber;
+
     private String profilePicture;
 
     private boolean admin = false;

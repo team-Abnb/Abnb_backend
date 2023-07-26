@@ -43,7 +43,7 @@ public class RoomResponseDto {
         this.isWishList = room.getWishlists()
                 .stream()
                 .anyMatch(wishlist ->
-                        wishlist.hasUserId(user.getUserId())
+                        wishlist.hasUserId(user == null ? 0 : user.getUserId())
                 );
         this.createdAt = room.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
         this.modifiedAt = room.getModifiedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
