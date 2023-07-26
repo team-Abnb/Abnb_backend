@@ -1,18 +1,9 @@
 package com.sparta.abnb.dto.requestdto;
 
-import com.sparta.abnb.entity.Comment;
-import com.sparta.abnb.entity.RoomPicture;
-import com.sparta.abnb.entity.User;
-import com.sparta.abnb.entity.Wishlist;
-import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Getter;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Builder
 @Getter

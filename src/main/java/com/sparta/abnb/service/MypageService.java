@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -36,6 +35,7 @@ public class MypageService {
                 -> new IllegalArgumentException("해당 USER가 존재하지 않습니다."));
 
         MypageResponseDto mypageResponseDto = MypageResponseDto.builder()
+                .email(checkuser.getEmail())
                 .profilePicture(checkuser.getProfilePicture())
                 .username(checkuser.getUsername())
                 .bio(checkuser.getBio())
@@ -52,15 +52,14 @@ public class MypageService {
         }
 
         // 비밀번호 수정 로직
-        // 웹에서 현재 비번을 확인 - 새 비밀번호를 적는게 한 공간에 있기 때문에 새로운 비번이 적혀있다면?
-        // 비밀번호를 수정한다는 뜻으로 받아드리고 이 로직을 작성함.
-        String newPassword = null;
-        if (mypageRequestDto.getPassword() != null) {
-            if (!user.getPassword().equals(mypageRequestDto.getPassword())) {
+        String newPassword = user.getPassword();
+        if (mypageRequestDto.getPassword() != null) { // 비밀번호를 변경하기 위해 기존의 비밀번호의 값을 입력했을 경우
+            if (!passwordEncoder.matches(mypageRequestDto.getPassword(),user.getPassword())) {
                 throw new IllegalArgumentException("비밀번호가 일치하지 않습니다. 다시 입력해주세요.");
             }
             newPassword = passwordEncoder.encode(mypageRequestDto.getNewPassword());
         }
+
 
         //기존 가지고 있는 이미지
         String currentPicture = user.getProfilePicture();
