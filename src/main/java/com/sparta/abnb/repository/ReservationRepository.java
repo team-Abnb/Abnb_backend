@@ -9,6 +9,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
-
+    List<Reservation> findAllByRoom(Room room);
     List<Reservation> findAllByUserAndRoom(User user, Room room);
 }
