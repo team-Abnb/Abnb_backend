@@ -16,6 +16,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Optional;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -24,6 +26,9 @@ public class MypageService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final S3Util s3Util;
+
+    @Value("${app.default.profile.image}")
+    private String defaultProfileImage;
 
     //마이페이지 조회
     public ResponseEntity<MypageResponseDto> getUserProfile(Long userId) {
@@ -57,34 +62,40 @@ public class MypageService {
             newPassword = passwordEncoder.encode(mypageRequestDto.getNewPassword());
         }
 
+        //기존 가지고 있는 이미지
+        String currentPicture = user.getProfilePicture();
+        log.info("요청받은 프로필 이미지 url : " + file);
         //이미지 수정 로직
-        String url = null;
-        if (file != null) {
-            // 기본이미지를 보내주거나? 새로운 이미지르 보내주거나
-            url = s3Util.updateImage(user.getProfilePicture(), file, "profilePicture");
-            log.info("업데이트 후 url " + url);
-        }
-        // entity 저장
-        User updateUser = User.builder()
-                .email(user.getEmail())
-                .username(mypageRequestDto.getUsername())
-                .phoneNumber(mypageRequestDto.getPhoneNumber())
-                .bio(mypageRequestDto.getBio())
-                .role(user.getRole())
-                .profilePicture(file == null ? user.getProfilePicture() : url)
-                .password(mypageRequestDto.getPassword() != null ? newPassword : user.getPassword())
-                .build();
+        String newProfilePicture = Optional.ofNullable(mypageRequestDto.getUseDefaultPicture())
+                .filter(useDefault  -> useDefault)
+                .map(userDefaultImg -> defaultProfileImage)
+                .orElseGet(() -> Optional.ofNullable(file)
+                        .map(picture -> s3Util.uploadImage(file, "profilePicture"))
+                        .orElse(user.getProfilePicture()));
 
-        userRepository.save(updateUser);
+
+        log.info("새로들어가는 이미지 : "  + newProfilePicture);
+        // 현재 이미지가 default가 아니고 / 현재이미지와 들어온 이미지가 다른경우 현재이미지 삭제하기
+        if(!currentPicture.equals(defaultProfileImage) && !currentPicture.equals(newProfilePicture)){
+            log.info("삭제할 url : " + currentPicture);
+            s3Util.deleteImage(currentPicture);
+        }
+
+        user.updateUser(user,mypageRequestDto,newPassword,newProfilePicture);
+
+        userRepository.save(user);
+
         //entity -> responseDto
+
         MypageResponseDto mypageResponseDto = MypageResponseDto.builder()
                 .email(user.getEmail())
-                .username(updateUser.getUsername())
-                .phoneNumber(updateUser.getPhoneNumber())
-                .bio(updateUser.getBio())
-                .profilePicture(updateUser.getProfilePicture())
+                .username(user.getUsername())
+                .bio(user.getBio())
+                .profilePicture(user.getProfilePicture())
                 .build();
 
+        log.info("user에 업데이트 된 이미지  : " + user.getProfilePicture());
+        log.info(user.getPassword());
         return ResponseEntity.status(HttpStatus.OK).body(mypageResponseDto);
 
 

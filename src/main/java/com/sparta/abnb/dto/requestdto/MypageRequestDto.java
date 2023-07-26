@@ -11,5 +11,6 @@ public class MypageRequestDto {
     private String password;
     private String newPassword;
     private String phoneNumber;
+    private Boolean useDefaultPicture;
     private String bio;
 }
