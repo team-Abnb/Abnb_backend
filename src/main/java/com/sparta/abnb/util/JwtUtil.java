@@ -48,12 +48,13 @@ public class JwtUtil {
     }
 
     // JWT AccessToken 생성 메서드
-    public String createAccessToken(Long id, String username, UserRole role) {
+    public String createAccessToken(Long id, String username, String email, UserRole role) {
         Date date = new Date();
         return BEARER +
                 Jwts.builder()
                         .setSubject(String.valueOf(id)) // 토큰(사용자) 식별자 값
                         .claim("username", username)
+                        .claim("email", email)
                         .claim(AUTHORIZATION_KEY, role)
                         .setExpiration(new Date(date.getTime() + ACCESS_TOKEN_EXPIRATION_TIME)) // 만료일
                         .setIssuedAt(date) // 발급일
@@ -156,8 +157,9 @@ public class JwtUtil {
 
         String username = user.getUsername();
         UserRole userRole = user.getRole();
+        String email = user.getEmail();
 
-        String newAccessToken = createAccessToken(userId, username, userRole);
+        String newAccessToken = createAccessToken(userId, username, email, userRole);
 
         res.addHeader(HEADER_ACCESS_TOKEN, newAccessToken);
         log.info("토큰재발급 성공: {}", newAccessToken);
@@ -173,7 +175,7 @@ public class JwtUtil {
     // Redis에 최초 발급된 토큰 값 저장 (key : refreshToken / value : accessToken)
     public void saveTokenToRedis(String refreshToken, String accessToken) {
         try {
-            Date refreshExpire = getUserInfo(refreshToken).getExpiration(); // refresh 토큰의 만료일
+            Date refreshExpire = getUserInfo(substringToken(refreshToken)).getExpiration(); // refresh 토큰의 만료일
             redisService.saveAccessToken(refreshToken, accessToken, refreshExpire);
         } catch (Exception e) {
             log.error("Error", e.getMessage(), e);
