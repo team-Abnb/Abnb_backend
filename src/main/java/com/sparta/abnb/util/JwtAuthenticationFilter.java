@@ -66,8 +66,8 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 //        data.put("statusCode", HttpServletResponse.SC_OK);
 //        data.put("msg", "로그인 성공");
 
-        ObjectMapper mapper = new ObjectMapper();
-        String jsonString = mapper.writeValueAsString(data);
+//        ObjectMapper mapper = new ObjectMapper();
+//        String jsonString = mapper.writeValueAsString(data);
 
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
@@ -80,14 +80,14 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
         log.info("로그인 실패");
 
-        Map<String, Object> data = new LinkedHashMap<>();
-        data.put("success", false);
-        data.put("statusCode", HttpServletResponse.SC_BAD_REQUEST);
-        data.put("msg", "비밀번호 혹은 이메일이 틀렸습니다.");
-
-        // 에러 메시지를 JSON 형식으로 생성
-        ObjectMapper objectMapper = new ObjectMapper();
-        String errorJson = objectMapper.writeValueAsString(data);
+//        Map<String, Object> data = new LinkedHashMap<>();
+//        data.put("success", false);
+//        data.put("statusCode", HttpServletResponse.SC_BAD_REQUEST);
+//        data.put("msg", "비밀번호 혹은 이메일이 틀렸습니다.");
+//
+//        // 에러 메시지를 JSON 형식으로 생성
+//        ObjectMapper objectMapper = new ObjectMapper();
+//        String errorJson = objectMapper.writeValueAsString(data);
 
         // 응답에 에러 메시지 전송
         response.setContentType("application/json");
