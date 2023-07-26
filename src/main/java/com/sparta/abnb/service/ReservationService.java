@@ -34,6 +34,10 @@ public class ReservationService {
         LocalDate checkInDate = LocalDate.parse(reservationRequestDto.getCheckInDate(), formatter);
         LocalDate checkOutDate = LocalDate.parse(reservationRequestDto.getCheckOutDate(), formatter);
 
+        if (checkOutDate.isBefore(checkInDate)){
+            throw new IllegalArgumentException("체크아웃 날짜는 체크인 날짜보다 빠르게 선택할 수 없습니다.");
+        }
+
         Reservation reservation = Reservation.builder()
                 .reservationNumber(reservationRequestDto.getReservationNumber())
                 .checkin(checkInDate)
