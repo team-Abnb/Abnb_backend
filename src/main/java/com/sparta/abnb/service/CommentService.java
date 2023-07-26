@@ -102,6 +102,11 @@ public class CommentService {
         Comment comment = commentRepository.findById(commentId).orElseThrow(()->
                 new IllegalArgumentException("작성하신 후기가 존재하지 않습니다."));
 
+        // 후기를 작성한 User인지 확인
+        if(!comment.getUser().getUserId().equals(user.getUserId())){
+            throw new IllegalArgumentException("후기를 작성한 USER가 아닙니다.");
+        }
+
         commentRepository.delete(comment);
 
         return ResponseEntity.status(HttpStatus.OK).body("후기 삭제가 완료되었습니다.");
