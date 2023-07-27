@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -69,7 +70,11 @@ public class CommentService {
         List<Comment> commentList = commentRepository.findAllByRoom(room);
 
         if(commentList.isEmpty()){
-            throw new IllegalArgumentException("해당 ROOM은 후기가 존재하지 않습니다.");
+            return ResponseEntity.status(HttpStatus.OK).body(CommentResponseDto.builder()
+                    .totalComments(0)
+                    .commentResponseDtos(Collections.emptyList())
+                    .message("후기가 존재하지 않습니다.")
+                    .build());
         }
         List<CommentDto> commentDtos = commentList.stream()
                 .map(comment -> CommentDto.builder()
