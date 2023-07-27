@@ -41,6 +41,8 @@ public class User extends Timestamped {
     @Enumerated(EnumType.STRING)
     private UserRole role;
 
+    private Long kakaoId;
+
     // room과 연관관계
     @OneToMany(mappedBy = "user")
     private List<Room> rooms = new ArrayList<>();
@@ -67,5 +69,10 @@ public class User extends Timestamped {
         this.profilePicture = newProfilePicture;
         this.role = user.getRole();
         this.username = mypageRequestDto.getUsername();
+    }
+
+    public User kakaoIdUpdate(Long kakaoId) {
+        this.kakaoId = kakaoId;
+        return this;
     }
 }
