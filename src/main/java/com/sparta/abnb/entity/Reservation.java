@@ -1,9 +1,10 @@
 package com.sparta.abnb.entity;
 
+import com.sparta.abnb.dto.requestdto.ReservationRequestDto;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Getter
 @Builder
@@ -15,20 +16,28 @@ public class Reservation extends Timestamped {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long reservationId;
 
-    @Column
+    @Column(nullable = false)
     private Long reservationNumber; // 예약 인원
 
-    @Column
-    private LocalDateTime checkin; // 체크인
+    @Column(nullable = false)
+    private LocalDate checkin; // 체크인
 
-    @Column
-    private LocalDateTime checkout; // 체크아웃
+    @Column(nullable = false)
+    private LocalDate checkout; // 체크아웃
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "room_id")
+    @JoinColumn(name = "room_id", nullable = false)
     private Room room;
+
+    public void update(ReservationRequestDto requestDto, LocalDate checkInDate, LocalDate checkOutDate, Room reservationRoom, User user) {
+        this.reservationNumber = requestDto.getReservationNumber();
+        this.checkin = checkInDate;
+        this.checkout = checkOutDate;
+        this.user = user;
+        this.room = reservationRoom;
+    }
 }

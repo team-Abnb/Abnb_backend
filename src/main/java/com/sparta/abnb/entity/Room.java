@@ -1,20 +1,19 @@
 package com.sparta.abnb.entity;
 
+import com.sparta.abnb.dto.requestdto.RoomRequestDto;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Builder
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "room")
-public class Room extends Timestamped{
+public class Room extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long roomId;
@@ -27,9 +26,6 @@ public class Room extends Timestamped{
 
     @Column(nullable = false)
     private Integer maxPeople;
-
-    @Column(nullable = false)
-    private String homePicture;
 
     @Column(nullable = false)
     private String theme;
@@ -46,10 +42,30 @@ public class Room extends Timestamped{
     private User user;
 
     // comment와 연관관계
-    @OneToMany(mappedBy = "room")
+    @OneToMany(mappedBy = "room", cascade = CascadeType.REMOVE)
     private List<Comment> comments = new ArrayList<>();
 
     // wishlist와 연관관계
-    @OneToMany(mappedBy = "room")
+    @OneToMany(mappedBy = "room", cascade = CascadeType.REMOVE)
     private List<Wishlist> wishlists = new ArrayList<>();
+
+    public Room(RoomRequestDto requestDto, User user) {
+        this.title = requestDto.getTitle();
+        this.content = requestDto.getContent();
+        this.maxPeople = requestDto.getMaxPeople();
+        this.theme = requestDto.getTheme();
+        this.price = requestDto.getPrice();
+        this.address = requestDto.getAddress();
+
+        this.user = user;
+    }
+
+    public void update(RoomRequestDto requestDto) {
+        this.title = requestDto.getTitle();
+        this.content = requestDto.getContent();
+        this.maxPeople = requestDto.getMaxPeople();
+        this.theme = requestDto.getTheme();
+        this.price = requestDto.getPrice();
+        this.address = requestDto.getAddress();
+    }
 }
