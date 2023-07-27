@@ -32,7 +32,7 @@ jobs:
         distribution: 'temurin'
 
         
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - run: touch ./src/main/resources/application-secret.properties
     - run: echo "${{ secrets.APPLICATION_SECRET_PROPERTIES }}" > ./src/main/resources/application-secret.properties
     - run: cat ./src/main/resources/application-secret.properties
