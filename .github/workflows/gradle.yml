@@ -64,7 +64,7 @@ jobs:
           ssh -i $HOME/key.pem -o StrictHostKeyChecking=no ${SSH_USER}@${SERVER_IP} '~/cicd'
         env:
           SSH_USER: ${{secrets.SSH_USER}}
-          SSH_KNOWN_HOSTS: ${{secrets.SERVER_IP}}
+          SERVER_IP: ${{secrets.SERVER_IP}}
           SSH_PEM_KEY: ${{secrets.SSH_PRIVATE_KEY}}
           
       - name: Setup SSH
