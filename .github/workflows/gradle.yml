@@ -61,7 +61,7 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
       - name: SCP transfer
-        run: 
+        run: |
           ssh-keyscan ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
           scp *.jar ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:~/cicd
           
@@ -72,5 +72,4 @@ jobs:
 
       - name: Execute remote commands
         run: |
-          ssh ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} "sudo fuser -k 8080/tcp"
           ssh ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} "sudo nohup java -jar ~/cicd/Abnb-0.0.1-SNAPSHOT.jar &"
