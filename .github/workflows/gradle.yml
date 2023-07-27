@@ -42,30 +42,25 @@ jobs:
 
     - name: Build with Gradle
       run: ./gradlew clean build --exclude-task test
-    - name: Upload artifact
-      uses: actions/upload-artifact@v3
+
+    - name: Upload JAR to Server
+      uses: appleboy/scp-action@master
       with:
-        name: cicdsample
-        path: build/libs/*.jar
-        
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Download artifact
-        uses: actions/download-artifact@v2
-        with:
-          name: cicdsample
-          
-  # SCP로 서버로 전송
-      - name: SCP transfer
-        uses: appleboy/scp-action@master
-        with:
-          username: ${{ secrets.SSH_USER }}
-          host: ${{ secrets.SERVER_IP }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          rm: true
-          source: ${{ steps.download.outputs.download-path }}/*.jar
-          target: "~/cicd"
-          ## 작업에 사용했던 dist 디렉토리를 경로상에서 제거
-          strip_components: 1
+        host: ${{ secrets.SERVER_IP }} # 원격 서버의 IP 주소
+        username: ${{ secrets.SSH_USER }} # 원격 서버에 접속할 사용자 이름
+        key: ${{ secrets.SSH_PRIVATE_KEY }} # 원격 서버 접속에 사용되는 SSH 개인 키
+        source: "build/libs/*.jar" # 업로드할 JAR 파일의 경로 또는 패턴
+        target: "~/cicd" # JAR 파일을 원격 서버에 저장할 경로
+
+    - name: Deploy on Server
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.SERVER_IP }} # 원격 서버의 IP 주소
+        username: ${{ secrets.SSH_USER }} # 원격 서버에 접속할 사용자 이름
+        key: ${{ secrets.SSH_PRIVATE_KEY }} # 원격 서버 접속에 사용되는 SSH 개인 키
+        script: |
+          # 서버에서 이전에 실행중인 프로세스 종료
+          sudo fuser -k 8080/tcp
+
+          # 배포 진행
+          nohup java -jar ~/cicd/Abnb-0.0.1-SNAPSHOT.jar &
