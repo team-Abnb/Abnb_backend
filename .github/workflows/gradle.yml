@@ -9,9 +9,11 @@ name: Java CI with Gradle
 
 on:
   push:
+
     branches: [ "kss123456789-patch-1" ]
   pull_request:
     branches: [ "kss123456789-patch-1" ]
+
 
 permissions:
   contents: read
@@ -28,6 +30,7 @@ jobs:
       with:
         java-version: '17'
         distribution: 'temurin'
+
         
     - uses: actions/checkout@v2
     - run: touch ./src/main/resources/application-secret.properties
