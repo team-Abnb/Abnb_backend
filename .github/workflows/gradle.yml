@@ -56,6 +56,17 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: cicdsample
+          
+      - name: Build and deploy
+        run: |
+          echo "$SSH_PEM_KEY" >> $HOME/key.pem
+          chmod 400 $HOME/key.pem
+          ssh -i $HOME/key.pem -o StrictHostKeyChecking=no ${SSH_USER}@${SERVER_IP} '~/cicd'
+        env:
+          SSH_USER: ${{secrets.SSH_USER}}
+          SSH_KNOWN_HOSTS: ${{secrets.SERVER_IP}}
+          SSH_PEM_KEY: ${{secrets.SSH_PRIVATE_KEY}}
+          
       - name: Setup SSH
         uses: webfactory/ssh-agent@v0.5.4
         with:
@@ -64,16 +75,6 @@ jobs:
         run: |
           mkdir -p ~/.ssh
           ssh-keyscan ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
-          
-      - name: Build and deploy
-        run: |
-          echo "$SSH_PEM_KEY" >> $HOME/key.pem
-          chmod 400 $HOME/key.pem
-          ssh -i $HOME/key.pem -o StrictHostKeyChecking=no ${SSH_USER}@${SSH_KNOWN_HOSTS} '~/script.sh'
-        env:
-          SSH_USER: ${{secrets.SSH_USER}}
-          SSH_KNOWN_HOSTS: ${{secrets.SSH_KNOWN_HOSTS}}
-          SSH_PEM_KEY: ${{secrets.SSH_PEM_KEY}}
           
       - name: Execute remote commands
         run: |
