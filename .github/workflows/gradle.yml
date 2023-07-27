@@ -63,4 +63,4 @@ jobs:
           sudo fuser -k 8080/tcp
 
           # 배포 진행
-          nohup java -jar ~/cicd/Abnb-0.0.1-SNAPSHOT.jar &
+          nohup java -jar ~/cicd/build/libs/Abnb-0.0.1-SNAPSHOT.jar &
