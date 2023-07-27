@@ -34,7 +34,7 @@ jobs:
         
     - uses: actions/checkout@v2
     - run: touch ./src/main/resources/application-secret.properties
-    - run: echo "${{secret.APPLICATION_SECRET_PROPERTIES}}" > ./src/main/resources/application-secret.properties
+    - run: echo "${{ secrets.APPLICATION_SECRET_PROPERTIES }}" > ./src/main/resources/application-secret.properties
     - run: cat ./src/main/resources/application-secret.properties
         
     - name: Grant execute permission for gradlew
