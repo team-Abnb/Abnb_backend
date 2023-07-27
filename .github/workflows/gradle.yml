@@ -61,7 +61,7 @@ jobs:
         run: |
           echo "$SSH_PEM_KEY" >> $HOME/key.pem
           chmod 400 $HOME/key.pem
-          ssh -i $HOME/key.pem -o StrictHostKeyChecking=no ${SSH_USER}@${SERVER_IP}:~/cicd
+          ssh -i $HOME/key.pem StrictHostKeyChecking=no ${SSH_USER}@${SERVER_IP}:~/cicd
         env:
           SSH_USER: ${{secrets.SSH_USER}}
           SERVER_IP: ${{secrets.SERVER_IP}}
