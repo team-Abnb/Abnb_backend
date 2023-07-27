@@ -62,8 +62,8 @@ jobs:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
       - name: SCP transfer
         run: |
-          ssh-keyscan ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
-          scp *.jar ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:~/cicd
+        
+          scp *.jar ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:cicd
           
       - name: Add SSH private key
         run: |
