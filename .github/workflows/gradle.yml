@@ -57,15 +57,28 @@ jobs:
         with:
           name: cicdsample
           
-      - name: Deliver File
+      ## 서버에 아티팩트 전송
+      - name: Transfer artifact
         uses: appleboy/scp-action@master
         with:
-          host: ${{ secrets.SERVER_IP }}
           username: ${{ secrets.SSH_USER }}
+          host: ${{ secrets.SERVER_IP }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "build/libs/*.jar"
-          target: "source"
           rm: true
+          source: "dist/*.jar"
+          target: ${{ secrets.DIST_PATH }}
+          ## 작업에 사용했던 dist 디렉토리를 경로상에서 제거
+          strip_components: 1
+      ## 전송된 아티팩트 확인
+      - name: Show structure of transfer files
+        uses: appleboy/ssh-action@master
+        with:
+          username: ${{ secrets.SSH_USER }}
+          host: ${{ secrets.SERVER_IP }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd ${{ secrets.DIST_PATH }}
+            ls -alh
           
       - name: Setup SSH
         uses: webfactory/ssh-agent@v0.5.4
