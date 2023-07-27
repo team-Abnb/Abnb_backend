@@ -64,6 +64,12 @@ jobs:
         run: 
           ssh-keyscan ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
           scp *.jar ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:~/cicd
+          
+      - name: Add SSH private key
+        run: |
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" | ssh-add -
+          ssh-add -l
+
       - name: Execute remote commands
         run: |
           ssh ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} "sudo fuser -k 8080/tcp"
