@@ -11,12 +11,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.config.ldap.LdapServerBeanDefinitionParser;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.file.AccessDeniedException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
 
 @Slf4j(topic = "Reservation Service")
 @Service
@@ -31,8 +34,32 @@ public class ReservationService {
                 .orElseThrow(() -> new NullPointerException("해당 숙소를 찾을 수 없습니다."));
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        // 사용자가 보낸 체크인/아웃
         LocalDate checkInDate = LocalDate.parse(reservationRequestDto.getCheckInDate(), formatter);
         LocalDate checkOutDate = LocalDate.parse(reservationRequestDto.getCheckOutDate(), formatter);
+
+        List<Reservation> reservations = reservationRepository.findAllByRoom(room);
+
+        boolean isOverlap = reservations.stream().anyMatch(reservation -> {
+                    // 기존에 저장된 예약정보의 체크인/아웃
+                    LocalDate checkInDateByReservation = reservation.getCheckin();
+                    LocalDate checkOutDateByReservation = reservation.getCheckout();
+
+                    // 체크인 날짜가 예약된 날짜 시작일과 종료일 사이면 예외처리(기존 예약의 체크아웃 당일 새로운 체크인 가능)
+                    if ((checkInDate.isBefore(checkInDateByReservation) && checkOutDate.isBefore(checkInDateByReservation.plusDays(1))) ||
+                            (checkInDate.isAfter(checkOutDateByReservation.minusDays(1)) && checkOutDate.isAfter(checkOutDateByReservation))){
+                        return false;
+                    }
+                    return true;
+                });
+
+        if (checkOutDate.isBefore(checkInDate)) {
+            throw new IllegalArgumentException("체크아웃 날짜는 체크인 날짜보다 빠르게 선택할 수 없습니다.");
+        }
+
+        if (isOverlap) {
+            throw new IllegalArgumentException("해당 날짜는 이미 예약이 완료되었습니다.");
+        }
 
         Reservation reservation = Reservation.builder()
                 .reservationNumber(reservationRequestDto.getReservationNumber())

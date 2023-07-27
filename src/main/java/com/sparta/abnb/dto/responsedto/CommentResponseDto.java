@@ -11,4 +11,5 @@ import java.util.List;
 public class CommentResponseDto {
     private Integer totalComments;
     private List<CommentDto> commentResponseDtos;
+    private String message;
 }
