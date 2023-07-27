@@ -43,7 +43,7 @@ jobs:
     - name: Build with Gradle
       run: ./gradlew clean build --exclude-task test
     - name: Upload artifact
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: cicdsample
         path: build/libs/*.jar
@@ -57,7 +57,7 @@ jobs:
         with:
           name: cicdsample
       - name: Setup SSH
-        uses: webfactory/ssh-agent@v0.5.4
+        uses: webfactory/ssh-agent@v0.8.0
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
       - name: SCP transfer
