@@ -65,4 +65,3 @@ jobs:
 
           # 배포 진행
           nohup java -jar ~/cicd/build/libs/Abnb-0.0.1-SNAPSHOT.jar &
-          disown
